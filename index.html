@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🌿 暮らしメモ</title>
+
 <style>
 body {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -12,22 +13,39 @@ body {
   padding: 20px;
   color: #333;
 }
+
 h1 {
   text-align: center;
   color: #4f6f52;
+  margin-bottom: 30px;
 }
+
 .menu {
   display: grid;
   gap: 15px;
-  margin-top: 25px;
 }
-button {
-  padding: 18px;
+
+.menu a {
+  display: block;
+  padding: 20px;
   font-size: 18px;
-  border: none;
-  border-radius: 15px;
+  text-align: center;
+  text-decoration: none;
+  color: #333;
   background: white;
+  border-radius: 15px;
   box-shadow: 0 2px 8px #ccc;
+}
+
+.menu a:active {
+  transform: scale(0.98);
+}
+
+.footer {
+  text-align: center;
+  margin-top: 30px;
+  color: #888;
+  font-size: 13px;
 }
 </style>
 </head>
@@ -37,12 +55,23 @@ button {
 <h1>🌿 暮らしメモ</h1>
 
 <div class="menu">
-<button>🏠 家のこと</button>
-<button>🚗 車のこと</button>
-<button>💰 お金・家計</button>
-<button>🍳 料理・レシピ</button>
-<button>🛠 DIY・修理</button>
-<button>❤️ 家族・大切なこと</button>
+
+<a href="house.html">🏠 家のこと</a>
+
+<a href="car.html">🚗 車のこと</a>
+
+<a href="money.html">💰 お金・家計</a>
+
+<a href="recipe.html">🍳 料理・レシピ</a>
+
+<a href="diy.html">🛠 DIY・修理</a>
+
+<a href="family.html">❤️ 家族・大切なこと</a>
+
+</div>
+
+<div class="footer">
+🌿 毎日の暮らしを大切に
 </div>
 
 </body>
