@@ -20,24 +20,31 @@ h1 {
   margin-bottom: 25px;
 }
 
-.card {
+.item {
   display: block;
   padding: 18px;
   margin-bottom: 15px;
   background: white;
   border-radius: 15px;
   box-shadow: 0 2px 8px #ccc;
+  text-decoration: none;
+  color: #333;
 }
 
-.card h2 {
+.item:active {
+  transform: scale(0.98);
+}
+
+.item h2 {
   margin: 0 0 8px;
   color: #4f6f52;
   font-size: 19px;
 }
 
-.card p {
+.item p {
   margin: 0;
   line-height: 1.6;
+  color: #666;
 }
 
 .back {
@@ -57,30 +64,30 @@ h1 {
 
 <h1>🏠 家のこと</h1>
 
-<div class="card">
-<h2>🔧 修理・DIY</h2>
+<a class="item" href="diy.html">
+<h2>🛠 DIY・修理</h2>
 <p>家の修理やDIYの記録をまとめます。</p>
-</div>
+</a>
 
-<div class="card">
+<a class="item" href="roof.html">
 <h2>🏠 屋根・外壁</h2>
 <p>屋根、外壁、雨漏りなどの記録。</p>
-</div>
+</a>
 
-<div class="card">
+<a class="item" href="water.html">
 <h2>🚿 水回り</h2>
 <p>お風呂、キッチン、トイレなどの記録。</p>
-</div>
+</a>
 
-<div class="card">
+<a class="item" href="gas.html">
 <h2>🔥 ガス・電気</h2>
 <p>ガス、電気、給湯器などの記録。</p>
-</div>
+</a>
 
-<div class="card">
+<a class="item" href="garden.html">
 <h2>🌳 庭・外回り</h2>
 <p>庭、植木、草刈り、防草などの記録。</p>
-</div>
+</a>
 
 <a class="back" href="index.html">← 🌿 暮らしメモに戻る</a>
 
