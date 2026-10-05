@@ -17,7 +17,91 @@ body {
 h1 {
   text-align: center;
   color: #4f6f52;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #777;
   margin-bottom: 25px;
+}
+
+.add-button {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 12px;
+  background: #4f6f52;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.form {
+  display: none;
+  background: white;
+  padding: 18px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px #ccc;
+}
+
+.form.show {
+  display: block;
+}
+
+.form h2 {
+  color: #4f6f52;
+  font-size: 19px;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #4f6f52;
+}
+
+input,
+textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  font-size: 17px;
+  font-family: inherit;
+}
+
+textarea {
+  min-height: 100px;
+}
+
+.save-button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 10px;
+  background: #6f8f72;
+  color: white;
+  font-size: 17px;
+}
+
+.cancel-button {
+  width: 100%;
+  padding: 13px;
+  margin-top: 10px;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  background: white;
+  font-size: 16px;
 }
 
 .card {
@@ -29,19 +113,34 @@ h1 {
 }
 
 .card h2 {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   color: #4f6f52;
   font-size: 19px;
 }
 
-.card p {
-  margin: 0;
-  line-height: 1.7;
+.info {
+  margin: 9px 0;
+  line-height: 1.6;
 }
 
 .label {
   font-weight: bold;
   color: #4f6f52;
+}
+
+.empty {
+  text-align: center;
+  color: #888;
+  line-height: 1.7;
+}
+
+.delete-button {
+  margin-top: 12px;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #eee;
+  color: #666;
 }
 
 .back {
@@ -61,46 +160,180 @@ h1 {
 
 <h1>🏠 床・床鳴り</h1>
 
-<div class="card">
-<h2>📅 修理日</h2>
-<p>2026年　月　日</p>
+<div class="subtitle">
+修理記録一覧
 </div>
 
-<div class="card">
-<h2>📍 場所</h2>
-<p>台所付近</p>
+<button class="add-button" onclick="showForm()">
+＋ 修理記録を追加
+</button>
+
+<div class="form" id="form">
+
+<h2>📝 修理記録を入力</h2>
+
+<label>📅 修理日</label>
+<input type="date" id="date">
+
+<label>📍 場所</label>
+<input type="text" id="place" placeholder="例：台所付近">
+
+<label>🔍 症状</label>
+<textarea id="symptom" placeholder="例：踏むとグッという音がする"></textarea>
+
+<label>🔧 原因・修理内容</label>
+<textarea id="repair" placeholder="例：根太を追加し、鋼製束で補強"></textarea>
+
+<label>💰 費用</label>
+<input type="number" id="cost" placeholder="例：5000">
+
+<label>📝 修理後の状態</label>
+<textarea id="result" placeholder="例：床鳴りは改善したが少し音が残っている"></textarea>
+
+<button class="save-button" onclick="saveRecord()">
+保存する
+</button>
+
+<button class="cancel-button" onclick="hideForm()">
+キャンセル
+</button>
+
 </div>
 
-<div class="card">
-<h2>🔍 症状</h2>
-<p>
-踏むと「グッ」「ググッ」という音がする。<br>
-床が少し沈む感じがある。
-</p>
-</div>
-
-<div class="card">
-<h2>🔧 修理内容</h2>
-<p>
-既存の根太の間に根太を追加し、鋼製束で床下を補強。
-</p>
-</div>
-
-<div class="card">
-<h2>💰 費用</h2>
-<p>材料費：　　　　円</p>
-</div>
-
-<div class="card">
-<h2>📝 メモ</h2>
-<p>
-補強後は床鳴りが改善したが、少し音が残っている。
-</p>
-</div>
+<div id="records"></div>
 
 <a class="back" href="diy.html">
 ← 🛠 DIY・修理に戻る
 </a>
+
+<script>
+
+let records = JSON.parse(
+  localStorage.getItem("floorRecords") || "[]"
+);
+
+function showForm() {
+  document.getElementById("form").classList.add("show");
+}
+
+function hideForm() {
+  document.getElementById("form").classList.remove("show");
+}
+
+function saveRecord() {
+
+  const record = {
+    id: Date.now(),
+    date: document.getElementById("date").value,
+    place: document.getElementById("place").value,
+    symptom: document.getElementById("symptom").value,
+    repair: document.getElementById("repair").value,
+    cost: document.getElementById("cost").value,
+    result: document.getElementById("result").value
+  };
+
+  if (!record.date || !record.place || !record.symptom) {
+    alert("修理日・場所・症状を入力してください。");
+    return;
+  }
+
+  records.unshift(record);
+
+  localStorage.setItem(
+    "floorRecords",
+    JSON.stringify(records)
+  );
+
+  document.getElementById("date").value = "";
+  document.getElementById("place").value = "";
+  document.getElementById("symptom").value = "";
+  document.getElementById("repair").value = "";
+  document.getElementById("cost").value = "";
+  document.getElementById("result").value = "";
+
+  hideForm();
+  displayRecords();
+}
+
+function deleteRecord(id) {
+
+  if (!confirm("この記録を削除しますか？")) {
+    return;
+  }
+
+  records = records.filter(
+    record => record.id !== id
+  );
+
+  localStorage.setItem(
+    "floorRecords",
+    JSON.stringify(records)
+  );
+
+  displayRecords();
+}
+
+function displayRecords() {
+
+  const container = document.getElementById("records");
+
+  if (records.length === 0) {
+    container.innerHTML = `
+      <div class="card empty">
+        まだ修理記録はありません。<br>
+        「＋ 修理記録を追加」から登録できます。
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = records.map(record => `
+    <div class="card">
+
+      <h2>🔧 修理記録</h2>
+
+      <div class="info">
+        <span class="label">📅 修理日：</span>
+        ${record.date}
+      </div>
+
+      <div class="info">
+        <span class="label">📍 場所：</span>
+        ${record.place}
+      </div>
+
+      <div class="info">
+        <span class="label">🔍 症状：</span><br>
+        ${record.symptom}
+      </div>
+
+      <div class="info">
+        <span class="label">🔧 修理内容：</span><br>
+        ${record.repair || "未記入"}
+      </div>
+
+      <div class="info">
+        <span class="label">💰 費用：</span>
+        ${record.cost ? record.cost + "円" : "未記入"}
+      </div>
+
+      <div class="info">
+        <span class="label">📝 修理後：</span><br>
+        ${record.result || "未記入"}
+      </div>
+
+      <button class="delete-button"
+        onclick="deleteRecord(${record.id})">
+        この記録を削除
+      </button>
+
+    </div>
+  `).join("");
+}
+
+displayRecords();
+
+</script>
 
 </body>
 </html>
