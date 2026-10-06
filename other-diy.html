@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔧 その他のDIY</title>
+
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f5f7f2;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+h1 {
+  text-align: center;
+  color: #4f6f52;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #777;
+  margin-bottom: 25px;
+}
+
+.add-button {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 12px;
+  background: #4f6f52;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.form {
+  display: none;
+  background: white;
+  padding: 18px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px #ccc;
+}
+
+.form.show {
+  display: block;
+}
+
+.form h2 {
+  color: #4f6f52;
+  font-size: 19px;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #4f6f52;
+}
+
+input,
+textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  font-size: 17px;
+  font-family: inherit;
+}
+
+textarea {
+  min-height: 100px;
+}
+
+.save-button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 10px;
+  background: #6f8f72;
+  color: white;
+  font-size: 17px;
+}
+
+.cancel-button {
+  width: 100%;
+  padding: 13px;
+  margin-top: 10px;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  background: white;
+  font-size: 16px;
+}
+
+.card {
+  background: white;
+  padding: 18px;
+  margin-bottom: 15px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px #ccc;
+}
+
+.card h2 {
+  margin: 0 0 12px;
+  color: #4f6f52;
+  font-size: 19px;
+}
+
+.info {
+  margin: 9px 0;
+  line-height: 1.6;
+}
+
+.label {
+  font-weight: bold;
+  color: #4f6f52;
+}
+
+.empty {
+  text-align: center;
+  color: #888;
+  line-height: 1.7;
+}
+
+.delete-button {
+  margin-top: 12px;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #eee;
+  color: #666;
+}
+
+.back {
+  display: block;
+  margin-top: 25px;
+  padding: 15px;
+  text-align: center;
+  background: #4f6f52;
+  color: white;
+  text-decoration: none;
+  border-radius: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🔧 その他のDIY</h1>
+
+<div class="subtitle">
+家の修理・DIY・アイデア記録
+</div>
+
+<button class="add-button" onclick="showForm()">
+＋ DIY記録を追加
+</button>
+
+<div class="form" id="form">
+
+<h2>📝 DIY記録を入力</h2>
+
+<label>📅 作業日</label>
+<input type="date" id="date">
+
+<label>📍 場所</label>
+<input type="text" id="place" placeholder="例：玄関・庭・和室">
+
+<label>🔍 困っていたこと</label>
+<textarea id="symptom" placeholder="例：玄関のドアが閉まりにくかった"></textarea>
+
+<label>🔧 DIY・修理内容</label>
+<textarea id="repair" placeholder="例：金具を調整してネジを交換した"></textarea>
+
+<label>💰 費用</label>
+<input type="number" id="cost" placeholder="例：1000">
+
+<label>📝 作業後の状態</label>
+<textarea id="result" placeholder="例：スムーズに開閉できるようになった"></textarea>
+
+<button class="save-button" onclick="saveRecord()">
+保存する
+</button>
+
+<button class="cancel-button" onclick="hideForm()">
+キャンセル
+</button>
+
+</div>
+
+<div id="records"></div>
+
+<a class="back" href="diy.html">
+← 🛠 DIY・修理に戻る
+</a>
+
+<script>
+
+let records = JSON.parse(
+  localStorage.getItem("otherDiyRecords") || "[]"
+);
+
+function showForm() {
+  document.getElementById("form").classList.add("show");
+}
+
+function hideForm() {
+  document.getElementById("form").classList.remove("show");
+}
+
+function saveRecord() {
+
+  const record = {
+    id: Date.now(),
+    date: document.getElementById("date").value,
+    place: document.getElementById("place").value,
+    symptom: document.getElementById("symptom").value,
+    repair: document.getElementById("repair").value,
+    cost: document.getElementById("cost").value,
+    result: document.getElementById("result").value
+  };
+
+  if (!record.date || !record.place || !record.symptom) {
+    alert("作業日・場所・困っていたことを入力してください。");
+    return;
+  }
+
+  records.unshift(record);
+
+  localStorage.setItem(
+    "otherDiyRecords",
+    JSON.stringify(records)
+  );
+
+  document.getElementById("date").value = "";
+  document.getElementById("place").value = "";
+  document.getElementById("symptom").value = "";
+  document.getElementById("repair").value = "";
+  document.getElementById("cost").value = "";
+  document.getElementById("result").value = "";
+
+  hideForm();
+  displayRecords();
+}
+
+function deleteRecord(id) {
+
+  if (!confirm("この記録を削除しますか？")) {
+    return;
+  }
+
+  records = records.filter(
+    record => record.id !== id
+  );
+
+  localStorage.setItem(
+    "otherDiyRecords",
+    JSON.stringify(records)
+  );
+
+  displayRecords();
+}
+
+function displayRecords() {
+
+  const container = document.getElementById("records");
+
+  if (records.length === 0) {
+    container.innerHTML = `
+      <div class="card empty">
+        まだDIY記録はありません。<br>
+        「＋ DIY記録を追加」から登録できます。
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = records.map(record => `
+    <div class="card">
+
+      <h2>🔧 DIY記録</h2>
+
+      <div class="info">
+        <span class="label">📅 作業日：</span>
+        ${record.date}
+      </div>
+
+      <div class="info">
+        <span class="label">📍 場所：</span>
+        ${record.place}
+      </div>
+
+      <div class="info">
+        <span class="label">🔍 困っていたこと：</span><br>
+        ${record.symptom}
+      </div>
+
+      <div class="info">
+        <span class="label">🔧 DIY・修理内容：</span><br>
+        ${record.repair || "未記入"}
+      </div>
+
+      <div class="info">
+        <span class="label">💰 費用：</span>
+        ${record.cost ? record.cost + "円" : "未記入"}
+      </div>
+
+      <div class="info">
+        <span class="label">📝 作業後：</span><br>
+        ${record.result || "未記入"}
+      </div>
+
+      <button class="delete-button"
+        onclick="deleteRecord(${record.id})">
+        この記録を削除
+      </button>
+
+    </div>
+  `).join("");
+}
+
+displayRecords();
+
+</script>
+
+</body>
+</html>
