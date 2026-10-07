@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🌳 庭・外回り</title>
+
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f5f7f2;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+h1 {
+  text-align: center;
+  color: #4f6f52;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #777;
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+.add-button {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 12px;
+  background: #4f6f52;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.form {
+  display: none;
+  background: white;
+  padding: 18px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px #ccc;
+}
+
+.form.show {
+  display: block;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #4f6f52;
+}
+
+input,
+select,
+textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  font-size: 17px;
+  font-family: inherit;
+}
+
+textarea {
+  min-height: 100px;
+}
+
+.save-button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 10px;
+  background: #6f8f72;
+  color: white;
+  font-size: 17px;
+}
+
+.cancel-button {
+  width: 100%;
+  padding: 13px;
+  margin-top: 10px;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  background: white;
+  font-size: 16px;
+}
+
+.card {
+  background: white;
+  padding: 18px;
+  margin-bottom: 15px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px #ccc;
+}
+
+.card h2 {
+  margin: 0 0 12px;
+  color: #4f6f52;
+  font-size: 19px;
+}
+
+.info {
+  margin: 9px 0;
+  line-height: 1.6;
+}
+
+.label {
+  font-weight: bold;
+  color: #4f6f52;
+}
+
+.empty {
+  text-align: center;
+  color: #888;
+  line-height: 1.7;
+}
+
+.delete-button {
+  margin-top: 12px;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #eee;
+  color: #666;
+}
+
+.back {
+  display: block;
+  margin-top: 25px;
+  padding: 15px;
+  text-align: center;
+  background: #4f6f52;
+  color: white;
+  text-decoration: none;
+  border-radius: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🌳 庭・外回り</h1>
+
+<div class="subtitle">
+庭木・果樹・雑草・外構・排水・外灯などの記録
+</div>
+
+<button class="add-button" onclick="showForm()">
+＋ 点検・作業記録を追加
+</button>
+
+<div class="form" id="form">
+
+<h2>📝 記録を入力</h2>
+
+<label>📅 日付</label>
+<input type="date" id="date">
+
+<label>🌳 種類</label>
+<select id="category">
+<option value="">選択してください</option>
+<option>庭木・果樹</option>
+<option>剪定</option>
+<option>草・雑草</option>
+<option>害虫・病気</option>
+<option>排水・水たまり</option>
+<option>フェンス</option>
+<option>ブロック・外構</option>
+<option>外灯</option>
+<option>物置</option>
+<option>防草シート</option>
+<option>その他</option>
+</select>
+
+<label>📍 場所</label>
+<input type="text" id="place"
+placeholder="例：家の西側・庭・駐車場">
+
+<label>🔍 状態・困っていたこと</label>
+<textarea id="symptom"
+placeholder="例：雑草が増えてきた・木の枝が伸びた"></textarea>
+
+<label>🔧 作業・修理内容</label>
+<textarea id="repair"
+placeholder="例：剪定・草刈り・防草シート補修など"></textarea>
+
+<label>🌱 植物・品種など</label>
+<input type="text" id="plant"
+placeholder="例：梅・みかん・ブルーベリー">
+
+<label>💰 費用</label>
+<input type="number" id="cost"
+placeholder="例：3000">
+
+<label>📅 次回確認の目安</label>
+<input type="date" id="nextDate">
+
+<label>📝 作業後の状態</label>
+<textarea id="result"
+placeholder="例：枝を整理して通りやすくなった"></textarea>
+
+<button class="save-button" onclick="saveRecord()">
+保存する
+</button>
+
+<button class="cancel-button" onclick="hideForm()">
+キャンセル
+</button>
+
+</div>
+
+<div id="records"></div>
+
+<a class="back" href="house.html">
+← 🏠 家のことに戻る
+</a>
+
+<script>
+
+let records = JSON.parse(
+  localStorage.getItem("gardenRecords") || "[]"
+);
+
+function showForm() {
+  document.getElementById("form").classList.add("show");
+}
+
+function hideForm() {
+  document.getElementById("form").classList.remove("show");
+}
+
+function saveRecord() {
+
+  const record = {
+    id: Date.now(),
+    date: document.getElementById("date").value,
+    category: document.getElementById("category").value,
+    place: document.getElementById("place").value,
+    symptom: document.getElementById("symptom").value,
+    repair: document.getElementById("repair").value,
+    plant: document.getElementById("plant").value,
+    cost: document.getElementById("cost").value,
+    nextDate: document.getElementById("nextDate").value,
+    result: document.getElementById("result").value
+  };
+
+  if (!record.date || !record.category || !record.symptom) {
+    alert("日付・種類・状態を入力してください。");
+    return;
+  }
+
+  records.unshift(record);
+
+  localStorage.setItem(
+    "gardenRecords",
+    JSON.stringify(records)
+  );
+
+  document.getElementById("date").value = "";
+  document.getElementById("category").value = "";
+  document.getElementById("place").value = "";
+  document.getElementById("symptom").value = "";
+  document.getElementById("repair").value = "";
+  document.getElementById("plant").value = "";
+  document.getElementById("cost").value = "";
+  document.getElementById("nextDate").value = "";
+  document.getElementById("result").value = "";
+
+  hideForm();
+  displayRecords();
+}
+
+function deleteRecord(id) {
+
+  if (!confirm("この記録を削除しますか？")) {
+    return;
+  }
+
+  records = records.filter(
+    record => record.id !== id
+  );
+
+  localStorage.setItem(
+    "gardenRecords",
+    JSON.stringify(records)
+  );
+
+  displayRecords();
+}
+
+function displayRecords() {
+
+  const container = document.getElementById("records");
+
+  if (records.length === 0) {
+
+    container.innerHTML = `
+      <div class="card empty">
+        まだ記録はありません。<br>
+        「＋ 点検・作業記録を追加」から登録できます。
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML = records.map(record => `
+
+    <div class="card">
+
+      <h2>🌳 庭・外回り記録</h2>
+
+      <div class="info">
+        <span class="label">📅 日付：</span>
+        ${record.date}
+      </div>
+
+      <div class="info">
+        <span class="label">🌳 種類：</span>
+        ${record.category}
+      </div>
+
+      <div class="info">
+        <span class="label">📍 場所：</span>
+        ${record.place || "未記入"}
+      </div>
+
+      <div class="info">
+        <span class="label">🔍 状態：</span><br>
+        ${record.symptom}
+      </div>
+
+      <div class="info">
+        <span class="label">🔧 作業・修理：</span><br>
+        ${record.repair || "未記入"}
+      </div>
+
+      <div class="info">
+        <span class="label">🌱 植物・品種：</span>
+        ${record.plant || "未記入"}
+      </div>
+
+      <div class="info">
+        <span class="label">💰 費用：</span>
+        ${record.cost ? record.cost + "円" : "未記入"}
+      </div>
+
+      <div class="info">
+        <span class="label">📅 次回確認：</span>
+        ${record.nextDate || "未設定"}
+      </div>
+
+      <div class="info">
+        <span class="label">📝 作業後：</span><br>
+        ${record.result || "未記入"}
+      </div>
+
+      <button class="delete-button"
+        onclick="deleteRecord(${record.id})">
+        この記録を削除
+      </button>
+
+    </div>
+
+  `).join("");
+}
+
+displayRecords();
+
+</script>
+
+</body>
+</html>
