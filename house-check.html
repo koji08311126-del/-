@@ -28,22 +28,43 @@ h1 {
   margin-bottom: 20px;
 }
 
-.section {
-  background: white;
+.period {
+  margin-bottom: 12px;
+}
+
+.period-button {
+  width: 100%;
+  padding: 18px;
+  border: none;
   border-radius: 15px;
-  padding: 16px;
-  margin-bottom: 18px;
+  background: white;
+  box-shadow: 0 2px 8px #ccc;
+  font-size: 18px;
+  font-weight: bold;
+  color: #4f6f52;
+  text-align: left;
+}
+
+.period-button span {
+  float: right;
+  font-size: 18px;
+}
+
+.period-content {
+  display: none;
+  background: white;
+  margin-top: 6px;
+  padding: 14px;
+  border-radius: 0 0 15px 15px;
   box-shadow: 0 2px 8px #ccc;
 }
 
-.section h2 {
-  margin: 0 0 12px;
-  color: #4f6f52;
-  font-size: 20px;
+.period-content.open {
+  display: block;
 }
 
 .category {
-  margin-top: 16px;
+  margin-top: 12px;
   padding: 9px 10px;
   background: #eef4eb;
   border-radius: 10px;
@@ -52,7 +73,7 @@ h1 {
 }
 
 .check-row {
-  padding: 12px 5px;
+  padding: 12px 4px;
   border-bottom: 1px solid #eee;
 }
 
@@ -97,14 +118,13 @@ h1 {
 
 .details textarea {
   min-height: 55px;
-  resize: vertical;
 }
 
 .reset {
   display: block;
   width: 100%;
   padding: 13px;
-  margin-top: 10px;
+  margin-top: 20px;
   background: #eee;
   border: none;
   border-radius: 10px;
@@ -136,9 +156,14 @@ h1 {
 
 
 <!-- 毎週 -->
-<div class="section">
+<div class="period">
 
-<h2>🔍 毎週</h2>
+<button class="period-button" onclick="togglePeriod('weekly', this)">
+🔍 毎週
+<span>＋</span>
+</button>
+
+<div id="weekly" class="period-content">
 
 <div class="category">🏠 家</div>
 
@@ -166,6 +191,7 @@ h1 {
 <label>📅 実施日</label>
 <input type="date">
 <label>📝 メモ</label>
+<label>📝 メモ</label>
 <textarea placeholder="傷・ひび・床鳴りなど"></textarea>
 <label>🔔 次回予定</label>
 <input type="date">
@@ -181,12 +207,11 @@ h1 {
 <label>📅 実施日</label>
 <input type="date">
 <label>📝 メモ</label>
-<textarea placeholder="水漏れ・カビ・排水の状態"></textarea>
+<textarea placeholder="水漏れ・カビ・排水など"></textarea>
 <label>🔔 次回予定</label>
 <input type="date">
 </div>
 </div>
-
 
 <div class="category">🚗 車</div>
 
@@ -220,7 +245,6 @@ h1 {
 </div>
 </div>
 
-
 <div class="category">💰 お金</div>
 
 <div class="check-row">
@@ -252,7 +276,6 @@ h1 {
 <input type="date">
 </div>
 </div>
-
 
 <div class="category">❤️ 家族</div>
 
@@ -302,12 +325,18 @@ h1 {
 </div>
 
 </div>
+</div>
 
 
 <!-- 毎月 -->
-<div class="section">
+<div class="period">
 
-<h2>📆 毎月</h2>
+<button class="period-button" onclick="togglePeriod('monthly', this)">
+📆 毎月
+<span>＋</span>
+</button>
+
+<div id="monthly" class="period-content">
 
 <div class="category">🏠 家</div>
 
@@ -371,7 +400,6 @@ h1 {
 </div>
 </div>
 
-
 <div class="category">🚗 車</div>
 
 <div class="check-row">
@@ -418,7 +446,6 @@ h1 {
 <input type="date">
 </div>
 </div>
-
 
 <div class="category">💰 お金</div>
 
@@ -482,7 +509,6 @@ h1 {
 </div>
 </div>
 
-
 <div class="category">❤️ 家族</div>
 
 <div class="check-row">
@@ -516,12 +542,18 @@ h1 {
 </div>
 
 </div>
+</div>
 
 
 <!-- 季節ごと -->
-<div class="section">
+<div class="period">
 
-<h2>🌸 季節ごと</h2>
+<button class="period-button" onclick="togglePeriod('seasonal', this)">
+🌸 季節ごと
+<span>＋</span>
+</button>
+
+<div id="seasonal" class="period-content">
 
 <div class="category">🏠 家</div>
 
@@ -585,7 +617,6 @@ h1 {
 </div>
 </div>
 
-
 <div class="category">🚗 車</div>
 
 <div class="check-row">
@@ -619,12 +650,18 @@ h1 {
 </div>
 
 </div>
+</div>
 
 
 <!-- 半年ごと -->
-<div class="section">
+<div class="period">
 
-<h2>🗓️ 半年ごと</h2>
+<button class="period-button" onclick="togglePeriod('halfyear', this)">
+🗓️ 半年ごと
+<span>＋</span>
+</button>
+
+<div id="halfyear" class="period-content">
 
 <div class="category">🏠 家</div>
 
@@ -688,7 +725,6 @@ h1 {
 </div>
 </div>
 
-
 <div class="category">🚗 車</div>
 
 <div class="check-row">
@@ -720,7 +756,6 @@ h1 {
 <input type="date">
 </div>
 </div>
-
 
 <div class="category">💰 お金</div>
 
@@ -755,12 +790,18 @@ h1 {
 </div>
 
 </div>
+</div>
 
 
 <!-- 年1回 -->
-<div class="section">
+<div class="period">
 
-<h2>📋 年1回</h2>
+<button class="period-button" onclick="togglePeriod('yearly', this)">
+📋 年1回
+<span>＋</span>
+</button>
+
+<div id="yearly" class="period-content">
 
 <div class="category">🏠 家</div>
 
@@ -824,7 +865,6 @@ h1 {
 </div>
 </div>
 
-
 <div class="category">🚗 車</div>
 
 <div class="check-row">
@@ -871,7 +911,6 @@ h1 {
 <input type="date">
 </div>
 </div>
-
 
 <div class="category">💰 お金</div>
 
@@ -935,7 +974,6 @@ h1 {
 </div>
 </div>
 
-
 <div class="category">❤️ 家族</div>
 
 <div class="check-row">
@@ -969,6 +1007,7 @@ h1 {
 </div>
 
 </div>
+</div>
 
 
 <button class="reset" onclick="resetChecks()">
@@ -981,6 +1020,22 @@ h1 {
 
 
 <script>
+
+function togglePeriod(id, button) {
+
+  const content = document.getElementById(id);
+  const arrow = button.querySelector('span');
+
+  if (content.classList.contains('open')) {
+    content.classList.remove('open');
+    arrow.textContent = '＋';
+  } else {
+    content.classList.add('open');
+    arrow.textContent = '−';
+  }
+
+}
+
 
 const rows = document.querySelectorAll('.check-row');
 
