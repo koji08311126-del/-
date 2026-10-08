@@ -76,7 +76,10 @@ h1 {
   padding: 12px 4px;
   border-bottom: 1px solid #eee;
 }
-
+.check-row.done .check-title {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
 .check-title {
   display: flex;
   align-items: flex-start;
@@ -1103,7 +1106,9 @@ rows.forEach((row, index) => {
   }
 
   checkbox.addEventListener('change', save);
-
+checkbox.addEventListener('change', () => {
+  row.classList.toggle('done', checkbox.checked);
+});
   dateInputs.forEach(input => {
     input.addEventListener('change', save);
   });
