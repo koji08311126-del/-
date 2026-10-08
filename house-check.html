@@ -42,27 +42,8 @@ h1 {
   font-size: 20px;
 }
 
-.item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 5px;
-  border-bottom: 1px solid #eee;
-  font-size: 16px;
-}
-
-.item:last-child {
-  border-bottom: none;
-}
-
-.item input {
-  width: 22px;
-  height: 22px;
-  flex-shrink: 0;
-}
-
 .category {
-  margin-top: 14px;
+  margin-top: 16px;
   padding: 8px 10px;
   background: #eef4eb;
   border-radius: 10px;
@@ -70,16 +51,51 @@ h1 {
   color: #4f6f52;
 }
 
-.back {
-  display: block;
-  text-align: center;
-  margin: 25px 0 10px;
-  padding: 14px;
-  background: #4f6f52;
-  color: white;
-  text-decoration: none;
-  border-radius: 12px;
+.check-row {
+  padding: 12px 5px;
+  border-bottom: 1px solid #eee;
+}
+
+.check-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 16px;
+}
+
+.check-title input {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.details {
+  margin-left: 32px;
+  margin-top: 10px;
+}
+
+.details label {
+  display: block;
+  font-size: 13px;
+  color: #777;
+  margin-top: 8px;
+}
+
+.details input,
+.details textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 4px;
+  padding: 9px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fafafa;
+}
+
+.details textarea {
+  min-height: 55px;
+  resize: vertical;
 }
 
 .reset {
@@ -93,6 +109,18 @@ h1 {
   color: #555;
   font-size: 14px;
 }
+
+.back {
+  display: block;
+  text-align: center;
+  margin: 25px 0 10px;
+  padding: 14px;
+  background: #4f6f52;
+  color: white;
+  text-decoration: none;
+  border-radius: 12px;
+  font-size: 16px;
+}
 </style>
 </head>
 
@@ -101,7 +129,7 @@ h1 {
 <h1>📅 定期チェック</h1>
 
 <div class="subtitle">
-🌿 家・車・お金・家族をまとめて確認
+🌿 家・車・お金・家族をまとめて管理
 </div>
 
 
@@ -112,64 +140,105 @@ h1 {
 
 <div class="category">🏠 家</div>
 
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 家の中で気になる音・におい・水漏れがないか確認
 </label>
 
-<label class="item">
-<input type="checkbox">
-床・壁・天井などに新しい傷や異常がないか確認
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
 
-<label class="item">
+<label>📝 メモ</label>
+<textarea placeholder="気になったことなど"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
+
+
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 水回りの水漏れ・カビ・排水を確認
 </label>
 
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
+
+<label>📝 メモ</label>
+<textarea placeholder="気になったことなど"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
+
 
 <div class="category">🚗 車</div>
 
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 タイヤの空気圧・見た目を確認
 </label>
 
-<label class="item">
-<input type="checkbox">
-車内・トランクの不要な物を整理
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
+
+<label>📝 メモ</label>
+<textarea placeholder="空気圧・タイヤの状態など"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
 
 
 <div class="category">💰 お金</div>
 
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 今週の食費・生活費を確認
 </label>
 
-<label class="item">
-<input type="checkbox">
-au PAY・PayPayなどの利用額を確認
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
+
+<label>📝 メモ</label>
+<textarea placeholder="今週の支出など"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
 
 
 <div class="category">❤️ 家族</div>
 
-<label class="item">
-<input type="checkbox">
-奥さんの体調や疲れ具合を気にかける
-</label>
-
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 家のことで困っていることがないか聞く
 </label>
 
-<label class="item">
-<input type="checkbox">
-「ありがとう」を言葉にする
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
+
+<label>📝 メモ</label>
+<textarea placeholder="話したことなど"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
 
 </div>
 
@@ -181,122 +250,171 @@ au PAY・PayPayなどの利用額を確認
 
 <div class="category">🏠 家</div>
 
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 エアコン・換気扇・フィルターを確認
 </label>
 
-<label class="item">
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
+
+<label>📝 メモ</label>
+<textarea placeholder="汚れ・掃除内容など"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
+
+
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 網戸・窓・サッシを確認
 </label>
 
-<label class="item">
-<input type="checkbox">
-ガス・給湯器の状態を確認
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
 
-<label class="item">
-<input type="checkbox">
-電気・ガス・水道料金を確認
-</label>
+<label>📝 メモ</label>
+<textarea placeholder="修理・掃除など"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
 
 
 <div class="category">🚗 車</div>
 
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 エンジンオイル交換時期を確認
 </label>
 
-<label class="item">
-<input type="checkbox">
-タイヤの溝・傷・ひびを確認
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
 
-<label class="item">
-<input type="checkbox">
-ワイパー・ウォッシャー液を確認
-</label>
+<label>📝 メモ</label>
+<textarea placeholder="走行距離など"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
 
 
 <div class="category">💰 お金</div>
 
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
-住宅ローン残高・金利を確認
+クレジットカード・QR決済の利用額を確認
 </label>
 
-<label class="item">
-<input type="checkbox">
-クレジットカードの利用額を確認
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
 
-<label class="item">
+<label>📝 メモ</label>
+<textarea placeholder="今月の支出など"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
+
+
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 NISAの積立状況を確認
 </label>
 
-<label class="item">
-<input type="checkbox">
-貯金・予備資金を確認
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
 
+<label>📝 メモ</label>
+<textarea placeholder="積立額など"></textarea>
 
-<div class="category">❤️ 家族</div>
-
-<label class="item">
-<input type="checkbox">
-家族で今月困ったことがなかったか振り返る
-</label>
-
-<label class="item">
-<input type="checkbox">
-夫婦で一緒に過ごす時間を作る
-</label>
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
 
 </div>
 
 
-<!-- 季節ごと -->
+<!-- 季節 -->
 <div class="section">
 
 <h2>🌸 季節ごと</h2>
 
 <div class="category">🏠 家</div>
 
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
-エアコンのフィルター・室外機を確認
+エアコン・室外機を確認
 </label>
 
-<label class="item">
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
+
+<label>📝 メモ</label>
+<textarea placeholder="掃除・異常など"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
+
+
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 雨樋・屋根・外壁を目視確認
 </label>
 
-<label class="item">
-<input type="checkbox">
-庭・植木・雑草を確認
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
 
-<label class="item">
-<input type="checkbox">
-網戸・窓・シャッターを確認
-</label>
+<label>📝 メモ</label>
+<textarea placeholder="ひび・剥がれ・雨漏りなど"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
 
 
 <div class="category">🚗 車</div>
 
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
-季節タイヤ・タイヤ状態を確認
+タイヤ・バッテリーを確認
 </label>
 
-<label class="item">
-<input type="checkbox">
-バッテリーの状態を確認
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
+
+<label>📝 メモ</label>
+<textarea placeholder="タイヤ・バッテリーの状態"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
 
 </div>
 
@@ -308,51 +426,84 @@ NISAの積立状況を確認
 
 <div class="category">🏠 家</div>
 
-<label class="item">
-<input type="checkbox">
-給湯器・ガス設備の状態を確認
-</label>
-
-<label class="item">
-<input type="checkbox">
-水漏れ・配管・排水を確認
-</label>
-
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 床鳴り・建具・ドア・鍵を確認
 </label>
 
-<label class="item">
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
+
+<label>📝 メモ</label>
+<textarea placeholder="修理した場所など"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
+
+
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 屋根・外壁・雨樋を詳しく確認
 </label>
 
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
+
+<label>📝 メモ</label>
+<textarea placeholder="補修が必要な場所"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
+
 
 <div class="category">🚗 車</div>
 
-<label class="item">
-<input type="checkbox">
-タイヤ・ブレーキなどを点検
-</label>
-
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 車検・点検予定を確認
 </label>
 
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
+
+<label>📝 メモ</label>
+<textarea placeholder="次回車検・点検など"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
+
 
 <div class="category">💰 お金</div>
 
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
-保険内容を確認
+住宅ローン・保険を確認
 </label>
 
-<label class="item">
-<input type="checkbox">
-住宅ローン金利を確認
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
+
+<label>📝 メモ</label>
+<textarea placeholder="金利・保険など"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
 
 </div>
 
@@ -364,79 +515,105 @@ NISAの積立状況を確認
 
 <div class="category">🏠 家</div>
 
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 火災報知器を確認
 </label>
 
-<label class="item">
-<input type="checkbox">
-屋根・外壁を点検
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
 
-<label class="item">
-<input type="checkbox">
-大きな修理・交換予定を整理
-</label>
+<label>📝 メモ</label>
+<textarea placeholder="電池・作動確認など"></textarea>
 
-<label class="item">
-<input type="checkbox">
-家の修理履歴を整理
-</label>
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
 
 
 <div class="category">🚗 車</div>
 
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
-車検・法定点検を確認
+車検・自動車保険を確認
 </label>
 
-<label class="item">
-<input type="checkbox">
-自動車保険を確認
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
 
-<label class="item">
-<input type="checkbox">
-タイヤ交換時期を確認
-</label>
+<label>📝 メモ</label>
+<textarea placeholder="車検・保険更新など"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
 
 
 <div class="category">💰 お金</div>
 
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 家計全体を見直す
 </label>
 
-<label class="item">
-<input type="checkbox">
-保険を見直す
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
 
-<label class="item">
+<label>📝 メモ</label>
+<textarea placeholder="見直したことなど"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
+
+
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 NISA・資産運用を見直す
 </label>
 
-<label class="item">
-<input type="checkbox">
-住宅ローンの今後を確認
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
+
+<label>📝 メモ</label>
+<textarea placeholder="積立額・運用方針など"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
 
 
 <div class="category">❤️ 家族</div>
 
-<label class="item">
+<div class="check-row">
+<label class="check-title">
 <input type="checkbox">
 家族旅行・夫婦の予定を考える
 </label>
 
-<label class="item">
-<input type="checkbox">
-家族それぞれの希望を確認する
-</label>
+<div class="details">
+<label>📅 実施日</label>
+<input type="date">
+
+<label>📝 メモ</label>
+<textarea placeholder="行きたい場所・予定など"></textarea>
+
+<label>🔔 次回予定</label>
+<input type="date">
+</div>
+</div>
 
 </div>
 
@@ -452,39 +629,84 @@ NISA・資産運用を見直す
 
 <script>
 
-const checks = document.querySelectorAll('input[type="checkbox"]');
+const rows = document.querySelectorAll('.check-row');
 
-checks.forEach((check, index) => {
+rows.forEach((row, index) => {
 
-  const saved = localStorage.getItem('kurashi-check-' + index);
+  const checkbox = row.querySelector('input[type="checkbox"]');
+  const dateInputs = row.querySelectorAll('input[type="date"]');
+  const textarea = row.querySelector('textarea');
 
-  if (saved === 'true') {
-    check.checked = true;
+  const saved = JSON.parse(
+    localStorage.getItem('kurashi-item-' + index) || '{}'
+  );
+
+  checkbox.checked = saved.checked || false;
+
+  if (dateInputs[0]) {
+    dateInputs[0].value = saved.date || '';
   }
 
-  check.addEventListener('change', () => {
+  if (textarea) {
+    textarea.value = saved.memo || '';
+  }
+
+  if (dateInputs[1]) {
+    dateInputs[1].value = saved.next || '';
+  }
+
+
+  function save() {
+
     localStorage.setItem(
-      'kurashi-check-' + index,
-      check.checked
+      'kurashi-item-' + index,
+      JSON.stringify({
+        checked: checkbox.checked,
+        date: dateInputs[0] ? dateInputs[0].value : '',
+        memo: textarea ? textarea.value : '',
+        next: dateInputs[1] ? dateInputs[1].value : ''
+      })
     );
+
+  }
+
+
+  checkbox.addEventListener('change', save);
+
+  dateInputs.forEach(input => {
+    input.addEventListener('change', save);
   });
+
+  if (textarea) {
+    textarea.addEventListener('input', save);
+  }
 
 });
 
 
 function resetChecks() {
 
-  if (!confirm('すべてのチェックをリセットしますか？')) {
+  if (!confirm('チェック・日付・メモをすべてリセットしますか？')) {
     return;
   }
 
-  checks.forEach((check, index) => {
+  rows.forEach((row, index) => {
 
-    check.checked = false;
+    const checkbox = row.querySelector('input[type="checkbox"]');
+    const dateInputs = row.querySelectorAll('input[type="date"]');
+    const textarea = row.querySelector('textarea');
 
-    localStorage.removeItem(
-      'kurashi-check-' + index
-    );
+    checkbox.checked = false;
+
+    dateInputs.forEach(input => {
+      input.value = '';
+    });
+
+    if (textarea) {
+      textarea.value = '';
+    }
+
+    localStorage.removeItem('kurashi-item-' + index);
 
   });
 
