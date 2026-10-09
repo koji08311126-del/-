@@ -1,1154 +1,183 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>📅 定期チェック｜🌿暮らしメモ</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🌿 定期チェック</title>
 <style>
-body {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f5f7f2;
-  margin: 0;
-  padding: 16px;
-  color: #333;
-}
-
-h1 {
-  text-align: center;
-  color: #4f6f52;
-  margin: 10px 0 5px;
-}
-
-.subtitle {
-  text-align: center;
-  color: #777;
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
-.period {
-  margin-bottom: 12px;
-}
-
-.period-button {
-  width: 100%;
-  padding: 18px;
-  border: none;
-  border-radius: 15px;
-  background: white;
-  box-shadow: 0 2px 8px #ccc;
-  font-size: 18px;
-  font-weight: bold;
-  color: #4f6f52;
-  text-align: left;
-}
-
-.period-button span {
-  float: right;
-  font-size: 18px;
-}
-
-.period-content {
-  display: none;
-  background: white;
-  margin-top: 6px;
-  padding: 14px;
-  border-radius: 0 0 15px 15px;
-  box-shadow: 0 2px 8px #ccc;
-}
-
-.period-content.open {
-  display: block;
-}
-
-.category {
-  margin-top: 12px;
-  padding: 9px 10px;
-  background: #eef4eb;
-  border-radius: 10px;
-  font-weight: bold;
-  color: #4f6f52;
-}
-
-.check-row {
-  padding: 12px 4px;
-  border-bottom: 1px solid #eee;
-}
-.check-row.done .check-title {
-  opacity: 0.5;
-  text-decoration: line-through;
-}
-.check-title {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-.check-title input {
-  width: 22px;
-  height: 22px;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.details {
-  margin-left: 32px;
-  margin-top: 10px;
-}
-
-.details label {
-  display: block;
-  font-size: 13px;
-  color: #777;
-  margin-top: 8px;
-}
-
-.details input,
-.details textarea {
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 4px;
-  padding: 9px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-  background: #fafafa;
-}
-
-.details textarea {
-  min-height: 55px;
-}
-
-.reset {
-  display: block;
-  width: 100%;
-  padding: 13px;
-  margin-top: 20px;
-  background: #eee;
-  border: none;
-  border-radius: 10px;
-  color: #555;
-  font-size: 14px;
-}
-
-.back {
-  display: block;
-  text-align: center;
-  margin: 25px 0 10px;
-  padding: 14px;
-  background: #4f6f52;
-  color: white;
-  text-decoration: none;
-  border-radius: 12px;
-  font-size: 16px;
-}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f7f2;margin:0;padding:16px;color:#333}
+h1{text-align:center;color:#4f6f52;margin:10px 0 5px}
+.subtitle{text-align:center;color:#777;font-size:14px;margin-bottom:20px}
+.actions{display:flex;gap:8px;margin-bottom:15px}
+.actions button{flex:1;padding:12px 6px;border:0;border-radius:10px;font-weight:bold;font-size:14px}
+.open-all{background:#e3eddf;color:#4f6f52}
+.close-all{background:#eee;color:#555}
+.period{margin-bottom:12px}
+.period-button{width:100%;padding:16px 12px;border:0;border-radius:15px;background:white;box-shadow:0 2px 8px #ccc;font-size:16px;font-weight:bold;color:#4f6f52;text-align:left;display:flex;align-items:center;gap:8px}
+.period-name{flex:1}
+.progress-count{font-size:12px;font-weight:normal;color:#777;white-space:nowrap}
+.arrow{font-size:18px}
+.period-content{display:none;background:white;margin-top:6px;padding:12px;border-radius:0 0 15px 15px;box-shadow:0 2px 8px #ccc}
+.period-content.open{display:block}
+.category{margin-top:12px;padding:9px 10px;background:#eef4eb;border-radius:10px;font-weight:bold;color:#4f6f52}
+.check-row{padding:12px 4px;border-bottom:1px solid #eee}
+.check-title{display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.5}
+.check-title input{width:22px;height:22px;flex-shrink:0;margin-top:1px}
+.check-row.done .check-title .item-text{opacity:.5;text-decoration:line-through}
+.details{margin-left:32px;margin-top:8px}
+.details label{display:block;font-size:13px;color:#777;margin-top:8px}
+.details input,.details textarea{width:100%;box-sizing:border-box;margin-top:4px;padding:9px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fafafa}
+.details textarea{min-height:50px}
+.reset{width:100%;padding:13px;margin-top:20px;background:#eee;border:0;border-radius:10px;color:#555;font-size:14px}
+.back{display:block;text-align:center;margin:22px 0 10px;padding:14px;background:#4f6f52;color:white;text-decoration:none;border-radius:12px}
 </style>
 </head>
-
 <body>
+<h1>🌿 定期チェック</h1>
+<div class="subtitle">家・車・お金・家族を定期的に確認しましょう</div>
 
-<h1>📅 定期チェック</h1>
-<div style="display:flex; gap:8px; margin:0 0 15px;">
-  <button onclick="openAll()" style="flex:1; padding:12px; border:none; border-radius:10px; background:#eef4eb; color:#4f6f52; font-weight:bold;">
-    ＋ 全部開く
-  </button>
-  <button onclick="closeAll()" style="flex:1; padding:12px; border:none; border-radius:10px; background:#eee; color:#555; font-weight:bold;">
-    − 全部閉じる
-  </button>
+<div class="actions">
+<button class="open-all" onclick="openAll()">＋ 全部開く</button>
+<button class="close-all" onclick="closeAll()">− 全部閉じる</button>
 </div>
-<div class="subtitle">
-🌿 家・車・お金・家族をまとめて管理
-</div>
-
-
-<!-- 毎週 -->
-<div class="period">
-
-<button class="period-button" onclick="togglePeriod('weekly', this)">
-🔍 毎週
-<span>＋</span>
-</button>
-
-<div id="weekly" class="period-content">
-
-<div class="category">🏠 家</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>家の中で気になる音・におい・水漏れがないか確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="気になったことなど"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>床・壁・天井などに新しい傷や異常がないか確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<label>📝 メモ</label>
-<textarea placeholder="傷・ひび・床鳴りなど"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>水回りの水漏れ・カビ・排水を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="水漏れ・カビ・排水など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="category">🚗 車</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>タイヤの空気圧・見た目を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="空気圧・傷・異常など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>車内・トランクの不要な物を整理</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="整理した内容など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="category">💰 お金</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>今週の食費・生活費を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="今週の支出など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>au PAY・PayPayなどの利用額を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="利用額など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="category">❤️ 家族</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>奥さんの体調や疲れ具合を気にかける</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="気づいたことなど"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>家のことで困っていることがないか聞く</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="話したことなど"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>「ありがとう」を言葉にする</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="伝えたことなど"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-</div>
-</div>
-
-
-<!-- 毎月 -->
-<div class="period">
-
-<button class="period-button" onclick="togglePeriod('monthly', this)">
-📆 毎月
-<span>＋</span>
-</button>
-
-<div id="monthly" class="period-content">
-
-<div class="category">🏠 家</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>エアコン・換気扇・フィルターを確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="掃除・汚れなど"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>網戸・窓・サッシを確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="掃除・修理など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>ガス・給湯器の状態を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="異音・水漏れなど"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>電気・ガス・水道料金を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="今月の料金など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="category">🚗 車</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>エンジンオイル交換時期を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="走行距離・交換予定など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>タイヤの溝・傷・ひびを確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="タイヤの状態など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>ワイパー・ウォッシャー液を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="交換・補充など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="category">💰 お金</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>住宅ローン残高・金利を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="残高・金利など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>クレジットカードの利用額を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="利用額・支払い予定など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>NISAの積立状況を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="積立額など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>貯金・予備資金を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="貯金額・予備資金など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="category">❤️ 家族</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>家族で今月困ったことがなかったか振り返る</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="困ったこと・改善したことなど"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>夫婦で一緒に過ごす時間を作る</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="一緒にしたことなど"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-</div>
-</div>
-
-
-<!-- 季節ごと -->
-<div class="period">
-
-<button class="period-button" onclick="togglePeriod('seasonal', this)">
-🌸 季節ごと
-<span>＋</span>
-</button>
-
-<div id="seasonal" class="period-content">
-
-<div class="category">🏠 家</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>エアコンのフィルター・室外機を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="掃除・異常など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>雨樋・屋根・外壁を目視確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="ひび・剥がれ・雨漏りなど"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>庭・植木・雑草を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="剪定・草刈りなど"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>網戸・窓・シャッターを確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="汚れ・動作・修理など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="category">🚗 車</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>季節タイヤ・タイヤ状態を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="交換時期・状態など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>バッテリーの状態を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="バッテリーの状態など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-</div>
-</div>
-
-
-<!-- 半年ごと -->
-<div class="period">
-
-<button class="period-button" onclick="togglePeriod('halfyear', this)">
-🗓️ 半年ごと
-<span>＋</span>
-</button>
-
-<div id="halfyear" class="period-content">
-
-<div class="category">🏠 家</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>給湯器・ガス設備の状態を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="異音・劣化など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>水漏れ・配管・排水を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="水漏れ・詰まりなど"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>床鳴り・建具・ドア・鍵を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="床鳴り・建具の不具合など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>屋根・外壁・雨樋を詳しく確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="補修が必要な場所など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="category">🚗 車</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>タイヤ・ブレーキなどを点検</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="タイヤ・ブレーキの状態など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>車検・点検予定を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="次回車検・点検など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="category">💰 お金</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>保険内容を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="保障内容・保険料など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>住宅ローン金利を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="金利・残高など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-</div>
-</div>
-
-
-<!-- 年1回 -->
-<div class="period">
-
-<button class="period-button" onclick="togglePeriod('yearly', this)">
-📋 年1回
-<span>＋</span>
-</button>
-
-<div id="yearly" class="period-content">
-
-<div class="category">🏠 家</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>火災報知器を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="電池・作動確認など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>屋根・外壁を点検</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="劣化・補修箇所など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>大きな修理・交換予定を整理</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="今後必要な修理など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>家の修理履歴を整理</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="修理した場所・費用など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="category">🚗 車</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>車検・法定点検を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="車検・点検内容など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>自動車保険を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="更新日・保険内容など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>タイヤ交換時期を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="交換時期・タイヤ状態など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="category">💰 お金</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>家計全体を見直す</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="収入・支出・固定費など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>保険を見直す</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="保険料・保障内容など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>NISA・資産運用を見直す</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="積立額・運用方針など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>住宅ローンの今後を確認</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="残高・金利・今後の返済など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="category">❤️ 家族</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>家族旅行・夫婦の予定を考える</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="行きたい場所・予定など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-<div class="check-row">
-<label class="check-title">
-<input type="checkbox">
-<span>家族それぞれの希望を確認する</span>
-</label>
-<div class="details">
-<label>📅 実施日</label>
-<input type="date">
-<label>📝 メモ</label>
-<textarea placeholder="やりたいこと・希望など"></textarea>
-<label>🔔 次回予定</label>
-<input type="date">
-</div>
-</div>
-
-</div>
-</div>
-
-
-<button class="reset" onclick="resetChecks()">
-☑️ チェック・日付・メモ・次回予定をすべてリセット
-</button>
 
-<a class="back" href="index.html">
-🌿 暮らしメモに戻る
-</a>
+<div id="periods"></div>
 
+<button class="reset" onclick="resetChecks()">🔄 チェック・日付・メモをリセット</button>
+<a class="back" href="index.html">🏠 トップページへ戻る</a>
 
 <script>
-function openAll() {
-  document.querySelectorAll('.period-content').forEach(content => {
-    content.classList.add('open');
+const groups = [
+{ id:"weekly", name:"🔍 毎週", categories:[
+["🏠 家",["家の中で気になる音・におい・水漏れがないか確認","床・壁・天井などに新しい傷や異常がないか確認","水回りの水漏れ・カビ・排水を確認"]],
+["🚗 車",["タイヤの空気圧・見た目を確認","車内・トランクの不要な物を整理"]],
+["💰 お金",["今週の食費・生活費を確認","au PAY・PayPayなどの利用額を確認"]],
+["❤️ 家族",["奥さんの体調や疲れ具合を気にかける","家のことで困っていることがないか聞く","「ありがとう」を言葉にする"]]
+]},
+{ id:"monthly", name:"📆 毎月", categories:[
+["🏠 家",["エアコン・換気扇・フィルターを確認","網戸・窓・サッシを確認","ガス・給湯器の状態を確認","電気・ガス・水道料金を確認"]],
+["🚗 車",["エンジンオイル交換時期を確認","タイヤの溝・傷・ひびを確認","ワイパー・ウォッシャー液を確認"]],
+["💰 お金",["住宅ローン残高・金利を確認","クレジットカードの利用額を確認","NISAの積立状況を確認","貯金・予備資金を確認"]],
+["❤️ 家族",["家族で今月困ったことがなかったか振り返る","夫婦で一緒に過ごす時間を作る"]]
+]},
+{ id:"seasonal", name:"🌸 季節ごと", categories:[
+["🏠 家",["エアコンのフィルター・室外機を確認","雨樋・屋根・外壁を目視確認","庭・植木・雑草を確認","網戸・窓・シャッターを確認"]],
+["🚗 車",["季節タイヤ・タイヤ状態を確認","バッテリーの状態を確認"]]
+]},
+{ id:"halfyear", name:"🗓️ 半年ごと", categories:[
+["🏠 家",["給湯器・ガス設備の状態を確認","水漏れ・配管・排水を確認","床鳴り・建具・ドア・鍵を確認","屋根・外壁・雨樋を詳しく確認"]],
+["🚗 車",["タイヤ・ブレーキなどを点検","車検・点検予定を確認"]],
+["💰 お金",["保険内容を確認","住宅ローン金利を確認"]]
+]},
+{ id:"yearly", name:"📋 年1回", categories:[
+["🏠 家",["火災報知器を確認","屋根・外壁を点検","大きな修理・交換予定を整理","家の修理履歴を整理"]],
+["🚗 車",["車検・法定点検を確認","自動車保険を確認","タイヤ交換時期を確認"]],
+["💰 お金",["家計全体を見直す","保険を見直す","NISA・資産運用を見直す","住宅ローンの今後を確認"]],
+["❤️ 家族",["家族旅行・夫婦の予定を考える","家族それぞれの希望を確認する"]]
+]}
+];
+
+const root=document.getElementById("periods");
+
+groups.forEach(group=>{
+ const section=document.createElement("section");
+ section.className="period";
+ section.innerHTML=`
+ <button class="period-button" onclick="togglePeriod('${group.id}',this)">
+ <span class="period-name">${group.name}</span>
+ <span class="progress-count" id="count-${group.id}">0 / 0 完了</span>
+ <span class="arrow">＋</span></button>
+ <div class="period-content" id="${group.id}"></div>`;
+ const content=section.querySelector(".period-content");
+
+ group.categories.forEach(category=>{
+  const heading=document.createElement("div");
+  heading.className="category";
+  heading.textContent=category[0];
+  content.appendChild(heading);
+
+  category[1].forEach(item=>{
+   const row=document.createElement("div");
+   row.className="check-row";
+   const key="kurashi-v2-"+group.id+"-"+item;
+   row.dataset.key=key;
+   row.innerHTML=`
+   <div class="check-title">
+   <input type="checkbox">
+   <span class="item-text"></span>
+   </div>
+   <div class="details">
+   <label>📅 実施日</label><input type="date" class="done-date">
+   <label>📝 メモ</label><textarea placeholder="気づいたことを記録"></textarea>
+   <label>🔔 次回予定</label><input type="date" class="next-date">
+   </div>`;
+   row.querySelector(".item-text").textContent=item;
+   content.appendChild(row);
+
+   const saved=JSON.parse(localStorage.getItem(key)||"{}");
+   const checkbox=row.querySelector('input[type="checkbox"]');
+   const doneDate=row.querySelector(".done-date");
+   const memo=row.querySelector("textarea");
+   const nextDate=row.querySelector(".next-date");
+
+   checkbox.checked=!!saved.checked;
+   doneDate.value=saved.date||"";
+   memo.value=saved.memo||"";
+   nextDate.value=saved.next||"";
+   row.classList.toggle("done",checkbox.checked);
+
+   function save(){
+    localStorage.setItem(key,JSON.stringify({
+     checked:checkbox.checked,date:doneDate.value,
+     memo:memo.value,next:nextDate.value
+    }));
+    row.classList.toggle("done",checkbox.checked);
+    updateProgress();
+   }
+   checkbox.addEventListener("change",save);
+   doneDate.addEventListener("change",save);
+   memo.addEventListener("input",save);
+   nextDate.addEventListener("change",save);
   });
-
-  document.querySelectorAll('.period-button span').forEach(span => {
-    span.textContent = '−';
-  });
-}
-
-function closeAll() {
-  document.querySelectorAll('.period-content').forEach(content => {
-    content.classList.remove('open');
-  });
-
-  document.querySelectorAll('.period-button span').forEach(span => {
-    span.textContent = '＋';
-  });
-}
-function togglePeriod(id, button) {
-
-  const content = document.getElementById(id);
-  const arrow = button.querySelector('span');
-
-  if (content.classList.contains('open')) {
-    content.classList.remove('open');
-    arrow.textContent = '＋';
-  } else {
-    content.classList.add('open');
-    arrow.textContent = '−';
-  }
-
-}
-
-
-const rows = document.querySelectorAll('.check-row');
-
-rows.forEach((row, index) => {
-
-  const checkbox = row.querySelector('input[type="checkbox"]');
-  const dateInputs = row.querySelectorAll('input[type="date"]');
-  const textarea = row.querySelector('textarea');
-
-  const saved = JSON.parse(
-    localStorage.getItem('kurashi-item-' + index) || '{}'
-  );
-
-  checkbox.checked = saved.checked || false;
-
-  if (dateInputs[0]) {
-    dateInputs[0].value = saved.date || '';
-  }
-
-  if (textarea) {
-    textarea.value = saved.memo || '';
-  }
-
-  if (dateInputs[1]) {
-    dateInputs[1].value = saved.next || '';
-  }
-
-  function save() {
-
-    localStorage.setItem(
-      'kurashi-item-' + index,
-      JSON.stringify({
-        checked: checkbox.checked,
-        date: dateInputs[0] ? dateInputs[0].value : '',
-        memo: textarea ? textarea.value : '',
-        next: dateInputs[1] ? dateInputs[1].value : ''
-      })
-    );
-
-  }
-
-  checkbox.addEventListener('change', save);
-checkbox.addEventListener('change', () => {
-  row.classList.toggle('done', checkbox.checked);
+ });
+ root.appendChild(section);
 });
-  dateInputs.forEach(input => {
-    input.addEventListener('change', save);
-  });
 
-  if (textarea) {
-    textarea.addEventListener('input', save);
-  }
-
-});
-
-
-function resetChecks() {
-
-  if (!confirm('チェック・日付・メモ・次回予定をすべてリセットしますか？')) {
-    return;
-  }
-
-  rows.forEach((row, index) => {
-
-    const checkbox = row.querySelector('input[type="checkbox"]');
-    const dateInputs = row.querySelectorAll('input[type="date"]');
-    const textarea = row.querySelector('textarea');
-
-    checkbox.checked = false;
-
-    dateInputs.forEach(input => {
-      input.value = '';
-    });
-
-    if (textarea) {
-      textarea.value = '';
-    }
-
-    localStorage.removeItem('kurashi-item-' + index);
-
-  });
-
+function togglePeriod(id,button){
+ const content=document.getElementById(id);
+ content.classList.toggle("open");
+ button.querySelector(".arrow").textContent=content.classList.contains("open")?"−":"＋";
 }
-
+function openAll(){
+ document.querySelectorAll(".period-content").forEach(el=>el.classList.add("open"));
+ document.querySelectorAll(".arrow").forEach(el=>el.textContent="−");
+}
+function closeAll(){
+ document.querySelectorAll(".period-content").forEach(el=>el.classList.remove("open"));
+ document.querySelectorAll(".arrow").forEach(el=>el.textContent="＋");
+}
+function updateProgress(){
+ groups.forEach(group=>{
+  const section=document.querySelector("#"+group.id).closest(".period");
+  const rows=section.querySelectorAll(".check-row");
+  const checked=section.querySelectorAll('.check-row input[type="checkbox"]:checked').length;
+  document.getElementById("count-"+group.id).textContent=checked+" / "+rows.length+" 完了";
+ });
+}
+function resetChecks(){
+ if(!confirm("このページのチェック・日付・メモ・次回予定をすべてリセットしますか？"))return;
+ document.querySelectorAll(".check-row").forEach(row=>{
+  localStorage.removeItem(row.dataset.key);
+  row.querySelector('input[type="checkbox"]').checked=false;
+  row.querySelector(".done-date").value="";
+  row.querySelector("textarea").value="";
+  row.querySelector(".next-date").value="";
+  row.classList.remove("done");
+ });
+ updateProgress();
+}
+updateProgress();
 </script>
-
 </body>
 </html>
