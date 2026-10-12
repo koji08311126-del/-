@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>❤️ 家族・大切なこと</title>
+<style>
+body {
+  font-family: sans-serif;
+  background: #f5f7f2;
+  color: #333;
+  margin: 0;
+  padding: 16px;
+  line-height: 1.7;
+}
+h1, h2 { color: #52745b; }
+h1 { font-size: 24px; }
+h2 { font-size: 18px; }
+.card {
+  background: white;
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px #00000010;
+}
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 90px;
+  padding: 12px;
+  margin: 6px 0 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+.check { display: block; margin: 10px 0; }
+a { color: #39724a; }
+.small { color: #666; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<h1>❤️ 家族・大切なこと</h1>
+<p>大切な人の気持ちを考え、少しずつ行動するためのメモ。</p>
+<p><a href="index.html">🏠 トップページへ戻る</a></p>
+
+<div class="card">
+<h2>🌷 奥さんの好きなこと</h2>
+<label>好きな食べ物・飲み物</label>
+<textarea id="favoriteFood" placeholder="好きな食べ物など"></textarea>
+<label>行きたい場所・やりたいこと</label>
+<textarea id="favoritePlaces" placeholder="温泉、食事、散歩、旅行など"></textarea>
+<label>喜んでもらえたこと</label>
+<textarea id="happyThings" placeholder="喜んでくれた言葉や行動"></textarea>
+</div>
+
+<div class="card">
+<h2>🌿 苦手なこと・気をつけたいこと</h2>
+<label>言われたくない言葉・嫌なこと</label>
+<textarea id="dislikes" placeholder="相手の気持ちを考えて記録する"></textarea>
+<label>疲れているときに気をつけること</label>
+<textarea id="tiredCare" placeholder="無理をさせないためにできること"></textarea>
+<label>仲直りするときに大切にしたいこと</label>
+<textarea id="reconcile" placeholder="言い訳せずに気持ちを聞く、など"></textarea>
+</div>
+
+<div class="card">
+<h2>💗 今日の気遣いチェック</h2>
+<p class="small">できたことにチェックを入れましょう。</p>
+<label class="check"><input type="checkbox" id="checkThanks"> 感謝の言葉を伝えた</label>
+<label class="check"><input type="checkbox" id="checkListen"> 相手の話を最後まで聞いた</label>
+<label class="check"><input type="checkbox" id="checkHouse"> 家のことに一つ関心を持った</label>
+<label class="check"><input type="checkbox" id="checkTired"> 疲れていないか気にかけた</label>
+<label class="check"><input type="checkbox" id="checkRespect"> 相手の気持ちを考えた</label>
+<label>今日、気づいたこと</label>
+<textarea id="todayNote" placeholder="小さなことでも記録"></textarea>
+</div>
+
+<div class="card">
+<h2>♨️ 夫婦の予定・楽しみ</h2>
+<label>行きたい場所・旅行の計画</label>
+<textarea id="tripPlans" placeholder="温泉、旅行、行きたいお店など"></textarea>
+<label>一緒に食べたいもの・したいこと</label>
+<textarea id="togetherPlans" placeholder="一緒に楽しみたいこと"></textarea>
+<label>次に話し合いたいこと</label>
+<textarea id="talkPlans" placeholder="落ち着いて相談したいこと"></textarea>
+</div>
+
+<div class="card">
+<h2>🏠 家族・家事のこと</h2>
+<label>自分が手伝うこと・気づいたこと</label>
+<textarea id="houseTasks" placeholder="買い物、掃除、家の修理など"></textarea>
+<label>家族の希望・大切な予定</label>
+<textarea id="familyPlans" placeholder="忘れないように記録"></textarea>
+</div>
+
+<p class="small" id="saveStatus">入力内容はこの端末のブラウザに保存されます。</p>
+
+<script>
+const fields = document.querySelectorAll("textarea, input[type='checkbox']");
+
+fields.forEach(function(field) {
+  const key = "family-v1-" + field.id;
+  const saved = localStorage.getItem(key);
+
+  if (saved !== null) {
+    if (field.type === "checkbox") {
+      field.checked = saved === "true";
+    } else {
+      field.value = saved;
+    }
+  }
+
+  function saveField() {
+    const value = field.type === "checkbox" ? field.checked : field.value;
+    localStorage.setItem(key, value);
+    document.getElementById("saveStatus").textContent = "✅ 保存しました";
+  }
+
+  field.addEventListener("input", saveField);
+  field.addEventListener("change", saveField);
+});
+</script>
+
+</body>
+</html>
