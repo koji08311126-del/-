@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🚗 車の記録｜暮らしメモ</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:16px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f3f6f4;color:#26352c;line-height:1.6}
+main{max-width:700px;margin:auto}
+h1{font-size:25px}
+.card{background:white;border-radius:14px;padding:16px;margin:14px 0;box-shadow:0 2px 8px #0000000d}
+label{display:block;margin:12px 0 5px;font-weight:600}
+input,select,textarea{width:100%;padding:11px;border:1px solid #ccd5ce;border-radius:8px;font:inherit;background:white}
+textarea{min-height:75px}
+button,.back{display:inline-block;border:0;border-radius:9px;padding:11px 15px;margin-top:12px;background:#356b4b;color:white;font:inherit;text-decoration:none;cursor:pointer}
+.secondary{background:#68766d}
+.record{border-top:1px solid #e2e8e3;padding:12px 0;overflow-wrap:anywhere}
+.small{font-size:13px;color:#657168}
+.danger{background:#a33b36}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="index.html">← 暮らしメモへ戻る</a>
+<h1>🚗 車の記録</h1>
+<p>車検・点検・交換・修理の記録を残しましょう。</p>
+
+<section class="card">
+<h2>🚙 車両情報</h2>
+<label for="carName">車名</label>
+<input id="carName" value="トヨタ ヤリスクロス Z ガソリン">
+<label for="carNumber">型式・メモ</label>
+<input id="carNumber" value="MXPB10・2023年式">
+<button onclick="saveCar()">車両情報を保存</button>
+<p class="small">車両情報と整備記録は、この端末のブラウザに保存されます。</p>
+</section>
+
+<section class="card">
+<h2>🛠️ 整備記録を追加</h2>
+<form id="recordForm">
+<label for="date">日付</label>
+<input id="date" type="date" required>
+<label for="kind">整備の種類</label>
+<select id="kind" required>
+<option value="車検・点検">車検・点検</option>
+<option value="エンジンオイル">エンジンオイル</option>
+<option value="タイヤ">タイヤ</option>
+<option value="バッテリー">バッテリー</option>
+<option value="ブレーキ">ブレーキ</option>
+<option value="修理">修理</option>
+<option value="保険">保険</option>
+<option value="その他">その他</option>
+</select>
+<label for="mileage">走行距離（km）</label>
+<input id="mileage" type="number" min="0" placeholder="例：42000">
+<label for="cost">費用（円）</label>
+<input id="cost" type="number" min="0" placeholder="例：15000">
+<label for="place">整備した店・場所</label>
+<input id="place" placeholder="例：購入店、整備工場">
+<label for="memo">作業内容・次回の予定</label>
+<textarea id="memo" placeholder="交換部品、次回点検時期など"></textarea>
+<button type="submit">記録を保存</button>
+</form>
+</section>
+
+<section class="card">
+<h2>📋 整備履歴</h2>
+<div id="records"></div>
+<button class="secondary" onclick="exportRecords()">記録をバックアップ</button>
+<p class="small">バックアップはJSONファイルとして保存できます。</p>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const RECORD_KEY="kurashi_car_records_v1";
+const CAR_KEY="kurashi_car_info_v1";
+
+function getRecords(){
+try{return JSON.parse(localStorage.getItem(RECORD_KEY)||"[]")}
+catch{return []}
+}
+function saveCar(){
+localStorage.setItem(CAR_KEY,JSON.stringify({
+name:$("carName").value,number:$("carNumber").value
+}));
+alert("車両情報を保存しました。");
+}
+function loadCar(){
+try{
+const car=JSON.parse(localStorage.getItem(CAR_KEY)||"null");
+if(car){
+$("carName").value=car.name||"";
+$("carNumber").value=car.number||"";
+}
+}catch{}
+}
+function renderRecords(){
+const records=getRecords().sort((a,b)=>b.date.localeCompare(a.date));
+const area=$("records");
+area.replaceChildren();
+if(!records.length){
+area.textContent="まだ記録はありません。上のフォームから追加してください。";
+return;
+}
+records.forEach(r=>{
+const item=document.createElement("div");
+item.className="record";
+const title=document.createElement("strong");
+title.textContent=r.date+"｜"+r.kind;
+item.appendChild(title);
+const details=document.createElement("p");
+details.textContent="走行距離："+(r.mileage?r.mileage+" km":"未入力")+" / 費用："+(r.cost?Number(r.cost).toLocaleString()+"円":"未入力");
+item.appendChild(details);
+const place=document.createElement("p");
+place.textContent="場所："+(r.place||"未入力");
+item.appendChild(place);
+const memo=document.createElement("p");
+memo.textContent="内容："+(r.memo||"未入力");
+item.appendChild(memo);
+const del=document.createElement("button");
+del.className="danger";
+del.textContent="この記録を削除";
+del.onclick=()=>{
+if(confirm("この記録を削除しますか？")){
+localStorage.setItem(RECORD_KEY,JSON.stringify(getRecords().filter(x=>x.id!==r.id)));
+renderRecords();
+}
+};
+item.appendChild(del);
+area.appendChild(item);
+});
+}
+$("recordForm").addEventListener("submit",event=>{
+event.preventDefault();
+const record={
+id:Date.now().toString(),
+date:$("date").value,
+kind:$("kind").value,
+mileage:$("mileage").value,
+cost:$("cost").value,
+place:$("place").value.trim(),
+memo:$("memo").value.trim()
+};
+const records=getRecords();
+records.push(record);
+localStorage.setItem(RECORD_KEY,JSON.stringify(records));
+$("recordForm").reset();
+$("date").value=new Date().toLocaleDateString("sv-SE");
+renderRecords();
+alert("整備記録を保存しました。");
+});
+function exportRecords(){
+const content=JSON.stringify({
+car:{name:$("carName").value,number:$("carNumber").value},
+records:getRecords()
+},null,2);
+const blob=new Blob([content],{type:"application/json"});
+const url=URL.createObjectURL(blob);
+const a=document.createElement("a");
+a.href=url;
+a.download="kurashi-car-backup.json";
+a.click();
+URL.revokeObjectURL(url);
+}
+$("date").value=new Date().toLocaleDateString("sv-SE");
+loadCar();
+renderRecords();
+</script>
+</body>
+</html>
