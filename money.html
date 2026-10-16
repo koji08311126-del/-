@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>💰 家計・お金｜暮らしメモ</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:16px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f3f6f4;color:#26352c;line-height:1.6}
+main{max-width:700px;margin:auto}
+h1{font-size:25px}
+.card{background:#fff;border-radius:14px;padding:16px;margin:14px 0;box-shadow:0 2px 8px #0000000d}
+label{display:block;margin:12px 0 5px;font-weight:600}
+input,select,textarea{width:100%;padding:11px;border:1px solid #ccd5ce;border-radius:8px;font:inherit;background:#fff}
+textarea{min-height:70px}
+button,.back{display:inline-block;border:0;border-radius:9px;padding:11px 15px;margin-top:12px;background:#356b4b;color:white;font:inherit;text-decoration:none;cursor:pointer}
+.secondary{background:#68766d}
+.danger{background:#a33b36}
+.record{border-top:1px solid #e2e8e3;padding:12px 0;overflow-wrap:anywhere}
+.small{font-size:13px;color:#657168}
+.total{font-size:22px;font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:420px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="index.html">← 暮らしメモへ戻る</a>
+<h1>💰 家計・お金</h1>
+<p>収入・支出・ローン・貯蓄を記録して、家計を見える化しましょう。</p>
+
+<section class="card">
+<h2>📊 今月の収支</h2>
+<label for="month">対象月</label>
+<input id="month" type="month">
+<div class="grid">
+<div><p class="small">収入合計</p><div class="total" id="incomeTotal">0円</div></div>
+<div><p class="small">支出合計</p><div class="total" id="expenseTotal">0円</div></div>
+</div>
+<p>今月の差額：<strong id="balance">0円</strong></p>
+</section>
+
+<section class="card">
+<h2>✏️ 収入・支出を記録</h2>
+<form id="moneyForm">
+<label for="date">日付</label>
+<input id="date" type="date" required>
+<label for="type">種類</label>
+<select id="type">
+<option value="支出">支出</option>
+<option value="収入">収入</option>
+<option value="貯蓄">貯蓄・積立</option>
+<option value="返済">ローン返済</option>
+</select>
+<label for="category">分類</label>
+<select id="category">
+<option>食費</option>
+<option>住宅ローン</option>
+<option>その他ローン</option>
+<option>電気・ガス・水道</option>
+<option>携帯・インターネット</option>
+<option>車・ガソリン・保険</option>
+<option>医療・保険</option>
+<option>日用品</option>
+<option>娯楽・旅行</option>
+<option>NISA・投資</option>
+<option>住宅修理積立</option>
+<option>車の積立</option>
+<option>給与</option>
+<option>賞与</option>
+<option>妻の収入</option>
+<option>その他</option>
+</select>
+<label for="amount">金額（円）</label>
+<input id="amount" type="number" min="1" step="1" placeholder="例：80000" required>
+<label for="memo">内容・メモ</label>
+<textarea id="memo" placeholder="例：スーパー、電気代、旅行積立など"></textarea>
+<button type="submit">記録を保存</button>
+</form>
+</section>
+
+<section class="card">
+<h2>📋 記録一覧</h2>
+<div id="records"></div>
+<button class="secondary" onclick="exportData()">データをバックアップ</button>
+<p class="small">大切な記録は定期的にバックアップしてください。</p>
+</section>
+
+<section class="card">
+<h2>🏠 ローン・目標メモ</h2>
+<label for="loan">ローン残高・毎月の返済など</label>
+<textarea id="loan" placeholder="住宅ローン、その他ローンなど"></textarea>
+<label for="goal">貯蓄・積立の目標</label>
+<textarea id="goal" placeholder="旅行、車、住宅修理、NISAなど"></textarea>
+<button onclick="saveNotes()">目標メモを保存</button>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const KEY="kurashi_money_records_v1";
+const NOTEKEY="kurashi_money_notes_v1";
+
+function allRecords(){
+try{return JSON.parse(localStorage.getItem(KEY)||"[]")}
+catch{return []}
+}
+function yen(n){return Number(n||0).toLocaleString("ja-JP")+"円"}
+
+function refresh(){
+const month=$("month").value;
+const records=allRecords().filter(r=>r.date.startsWith(month));
+const income=records.filter(r=>r.type==="収入").reduce((s,r)=>s+Number(r.amount),0);
+const expense=records.filter(r=>r.type==="支出"||r.type==="返済"||r.type==="貯蓄").reduce((s,r)=>s+Number(r.amount),0);
+$("incomeTotal").textContent=yen(income);
+$("expenseTotal").textContent=yen(expense);
+$("balance").textContent=yen(income-expense);
+
+const area=$("records");
+area.replaceChildren();
+records.sort((a,b)=>b.date.localeCompare(a.date)).forEach(r=>{
+const item=document.createElement("div");
+item.className="record";
+const title=document.createElement("strong");
+title.textContent=r.date+"｜"+r.type+"｜"+r.category;
+item.appendChild(title);
+const amount=document.createElement("p");
+amount.textContent=yen(r.amount);
+item.appendChild(amount);
+if(r.memo){
+const memo=document.createElement("p");
+memo.textContent=r.memo;
+item.appendChild(memo);
+}
+const del=document.createElement("button");
+del.className="danger";
+del.textContent="この記録を削除";
+del.onclick=()=>{
+if(confirm("この記録を削除しますか？")){
+localStorage.setItem(KEY,JSON.stringify(allRecords().filter(x=>x.id!==r.id)));
+refresh();
+}
+};
+item.appendChild(del);
+area.appendChild(item);
+});
+if(!records.length)area.textContent="この月の記録はありません。";
+}
+
+$("moneyForm").addEventListener("submit",e=>{
+e.preventDefault();
+const records=allRecords();
+records.push({
+id:Date.now().toString(),
+date:$("date").value,
+type:$("type").value,
+category:$("category").value,
+amount:$("amount").value,
+memo:$("memo").value.trim()
+});
+localStorage.setItem(KEY,JSON.stringify(records));
+$("moneyForm").reset();
+$("date").value=new Date().toLocaleDateString("sv-SE");
+$("month").value=$("date").value.slice(0,7);
+refresh();
+alert("家計の記録を保存しました。");
+});
+
+function saveNotes(){
+localStorage.setItem(NOTEKEY,JSON.stringify({
+loan:$("loan").value,goal:$("goal").value
+}));
+alert("目標メモを保存しました。");
+}
+function loadNotes(){
+try{
+const n=JSON.parse(localStorage.getItem(NOTEKEY)||"{}");
+$("loan").value=n.loan||"";
+$("goal").value=n.goal||"";
+}catch{}
+}
+function exportData(){
+const data={
+records:allRecords(),
+notes:JSON.parse(localStorage.getItem(NOTEKEY)||"{}")
+};
+const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+const url=URL.createObjectURL(blob);
+const a=document.createElement("a");
+a.href=url;
+a.download="kurashi-money-backup.json";
+a.click();
+URL.revokeObjectURL(url);
+}
+$("date").value=new Date().toLocaleDateString("sv-SE");
+$("month").value=$("date").value.slice(0,7);
+$("month").addEventListener("change",refresh);
+loadNotes();
+refresh();
+</script>
+</body>
+</html>
