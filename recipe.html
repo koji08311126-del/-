@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🍳 料理・レシピ｜暮らしメモ</title>
+<style>
+:root{--green:#4f6f52;--bg:#f5f7f2;--line:#dce5d8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#303a30;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;line-height:1.65}
+header{background:var(--green);color:white;padding:22px 16px}
+header h1{margin:0;font-size:24px}
+header p{margin:5px 0 0;font-size:14px}
+main{max-width:760px;margin:auto;padding:15px}
+.card{background:white;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:15px}
+h2{font-size:18px;color:var(--green);margin:0 0 12px}
+label{display:block;font-size:14px;font-weight:600;margin:10px 0 4px}
+input,textarea,select{width:100%;padding:11px;border:1px solid #cbd5c7;border-radius:9px;font:inherit;background:white;color:#303a30}
+textarea{min-height:90px;resize:vertical}
+button,.btn{border:0;border-radius:9px;padding:11px 14px;font:inherit;font-weight:600;background:var(--green);color:white;cursor:pointer}
+button.secondary{background:#e9efe6;color:#344d36}
+button.danger{background:#a94343}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.recipe{border:1px solid var(--line);border-radius:11px;padding:13px;margin:10px 0}
+.recipe h3{margin:0 0 5px;font-size:17px}
+.meta{font-size:13px;color:#647064}
+.recipe p{white-space:pre-wrap;margin:8px 0}
+.empty{color:#777;text-align:center;padding:20px 5px}
+.small{font-size:12px;color:#687468}
+.back{display:inline-block;color:white;text-decoration:none;margin-bottom:8px}
+footer{text-align:center;padding:20px;color:#697469;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+<a class="back" href="index.html">← 暮らしメモのホームへ</a>
+<h1>🍳 料理・レシピ</h1>
+<p>家族の好きな料理、いつもの味、作りたい料理を記録しよう</p>
+</header>
+<main>
+<section class="card">
+<h2>✏️ レシピを登録・編集</h2>
+<form id="recipeForm">
+<input type="hidden" id="editId">
+<label for="name">料理名 *</label>
+<input id="name" required placeholder="例：マジック麻婆豆腐">
+<label for="category">料理の種類</label>
+<select id="category">
+<option>主菜・おかず</option>
+<option>ご飯・麺</option>
+<option>汁物・スープ</option>
+<option>副菜・サラダ</option>
+<option>お菓子・デザート</option>
+<option>飲み物</option>
+<option>作りたい料理</option>
+<option>その他</option>
+</select>
+<label for="favorite">誰が好き？・お気に入り度</label>
+<input id="favorite" placeholder="例：家族みんな、妻のお気に入り">
+<label for="time">調理時間</label>
+<input id="time" placeholder="例：約20分">
+<label for="ingredients">材料・分量</label>
+<textarea id="ingredients" placeholder="例：
+豚ひき肉 200g
+豆腐 1丁
+長ねぎ 1/2本
+調味料 適量"></textarea>
+<label for="steps">作り方</label>
+<textarea id="steps" placeholder="1. 材料を切る
+2. フライパンで炒める
+3. 調味料を加えて煮る"></textarea>
+<label for="memo">作った感想・次回の工夫</label>
+<textarea id="memo" placeholder="例：少し辛かったので次回は豆板醤を減らす"></textarea>
+<label for="date">作った日・登録日</label>
+<input id="date" type="date">
+<div class="actions">
+<button type="submit">💾 レシピを保存</button>
+<button type="button" class="secondary" id="clearBtn">入力をクリア</button>
+</div>
+</form>
+</section>
+
+<section class="card">
+<h2>🔎 レシピを探す</h2>
+<label for="search">料理名・材料・メモで検索</label>
+<input id="search" placeholder="例：豆腐、カレー、妻のお気に入り">
+<label for="filter">種類で絞り込む</label>
+<select id="filter">
+<option value="">すべて表示</option>
+<option>主菜・おかず</option>
+<option>ご飯・麺</option>
+<option>汁物・スープ</option>
+<option>副菜・サラダ</option>
+<option>お菓子・デザート</option>
+<option>飲み物</option>
+<option>作りたい料理</option>
+<option>その他</option>
+</select>
+<div class="actions">
+<button type="button" class="secondary" id="exportBtn">📤 バックアップを書き出す</button>
+<button type="button" class="secondary" id="importBtn">📥 バックアップを読み込む</button>
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+</div>
+<p class="small">入力したレシピは、このiPhoneのブラウザに保存されます。Safariの履歴やWebサイトデータを消すと失われる場合があるため、ときどきバックアップしてください。</p>
+</section>
+
+<section class="card">
+<h2>📖 保存したレシピ</h2>
+<div id="count" class="meta">0件</div>
+<div id="list"></div>
+</section>
+</main>
+<footer>🌿 暮らしメモ｜毎日の暮らしを少しずつ記録</footer>
+
+<script>
+const KEY="kurashi_recipes_v1";
+const $=id=>document.getElementById(id);
+let recipes=[];
+try{recipes=JSON.parse(localStorage.getItem(KEY)||"[]");if(!Array.isArray(recipes))recipes=[]}catch(e){recipes=[]}
+
+function saveAll(){localStorage.setItem(KEY,JSON.stringify(recipes));render()}
+function today(){return new Date().toLocaleDateString("sv-SE")}
+$("date").value=today();
+
+function escapeHTML(s){
+ return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function val(id){return $(id).value.trim()}
+function resetForm(){
+ $("recipeForm").reset();
+ $("editId").value="";
+ $("date").value=today();
+}
+$("clearBtn").addEventListener("click",resetForm);
+
+$("recipeForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const name=val("name");
+ if(!name){alert("料理名を入力してください");return}
+ const oldId=val("editId");
+ const item={
+  id:oldId||String(Date.now())+Math.random().toString(16).slice(2),
+  name,
+  category:val("category"),
+  favorite:val("favorite"),
+  time:val("time"),
+  ingredients:val("ingredients"),
+  steps:val("steps"),
+  memo:val("memo"),
+  date:val("date")||today(),
+  updated:today()
+ };
+ if(oldId){
+  const i=recipes.findIndex(r=>r.id===oldId);
+  if(i>=0)recipes[i]=item;else recipes.unshift(item);
+ }else recipes.unshift(item);
+ saveAll();
+ resetForm();
+ alert("レシピを保存しました");
+});
+
+function render(){
+ const q=val("search").toLowerCase();
+ const cat=val("filter");
+ const shown=recipes.filter(r=>{
+  const hay=[r.name,r.category,r.favorite,r.ingredients,r.steps,r.memo].join(" ").toLowerCase();
+  return (!q||hay.includes(q))&&(!cat||r.category===cat);
+ });
+ $("count").textContent=shown.length+"件（登録合計 "+recipes.length+"件）";
+ const list=$("list");
+ if(!shown.length){
+  list.innerHTML='<div class="empty">まだレシピがありません。上から最初の料理を登録してみましょう。</div>';
+  return;
+ }
+ list.innerHTML=shown.map(r=>`
+ <article class="recipe">
+  <h3>${escapeHTML(r.name)}</h3>
+  <div class="meta">${escapeHTML(r.category)} ・ ${escapeHTML(r.date||"日付なし")}${r.time?" ・ "+escapeHTML(r.time):""}</div>
+  ${r.favorite?`<p>❤️ ${escapeHTML(r.favorite)}</p>`:""}
+  ${r.ingredients?`<p><strong>材料・分量</strong>\n${escapeHTML(r.ingredients)}</p>`:""}
+  ${r.steps?`<p><strong>作り方</strong>\n${escapeHTML(r.steps)}</p>`:""}
+  ${r.memo?`<p><strong>感想・工夫</strong>\n${escapeHTML(r.memo)}</p>`:""}
+  <div class="actions">
+   <button type="button" class="secondary" data-edit="${escapeHTML(r.id)}">編集</button>
+   <button type="button" class="secondary" data-copy="${escapeHTML(r.id)}">文章をコピー</button>
+   <button type="button" class="danger" data-delete="${escapeHTML(r.id)}">削除</button>
+  </div>
+ </article>`).join("");
+}
+$("search").addEventListener("input",render);
+$("filter").addEventListener("change",render);
+
+$("list").addEventListener("click",async e=>{
+ const edit=e.target.closest("[data-edit]");
+ const del=e.target.closest("[data-delete]");
+ const copy=e.target.closest("[data-copy]");
+ if(edit){
+  const r=recipes.find(x=>x.id===edit.dataset.edit);if(!r)return;
+  $("editId").value=r.id;
+  ["name","category","favorite","time","ingredients","steps","memo","date"].forEach(k=>$(k).value=r[k]||"");
+  window.scrollTo({top:0,behavior:"smooth"});
+ }
+ if(del){
+  const r=recipes.find(x=>x.id===del.dataset.delete);if(!r)return;
+  if(confirm("「"+r.name+"」を削除しますか？")){recipes=recipes.filter(x=>x.id!==r.id);saveAll()}
+ }
+ if(copy){
+  const r=recipes.find(x=>x.id===copy.dataset.copy);if(!r)return;
+  const text=`${r.name}\n種類：${r.category}\n材料・分量：\n${r.ingredients}\n作り方：\n${r.steps}\n感想：\n${r.memo}`;
+  try{await navigator.clipboard.writeText(text);alert("レシピをコピーしました")}catch(e){prompt("下の文章を長押ししてコピーしてください",text)}
+ }
+});
+
+$("exportBtn").addEventListener("click",()=>{
+ const blob=new Blob([JSON.stringify(recipes,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");a.href=url;a.download="kurashi-recipes-backup.json";a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+$("importBtn").addEventListener("click",()=>$("importFile").click());
+$("importFile").addEventListener("change",async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  const data=JSON.parse(await file.text());
+  if(!Array.isArray(data)||!data.every(r=>r&&typeof r.name==="string"&&r.id)){
+   throw new Error("形式が違います");
+  }
+  if(confirm("現在のレシピを置き換えて読み込みますか？先にバックアップを取ってください。")){
+   recipes=data;saveAll();alert("読み込みました");
+  }
+ }catch(err){alert("読み込めませんでした。バックアップファイルを確認してください。")}
+ e.target.value="";
+});
+render();
+</script>
+</body>
+</html>
