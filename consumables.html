@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>消耗品の在庫管理｜暮らしメモ</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5f7f2;color:#303a30;font-family:-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.6}
+header{background:#4f6f52;color:white;padding:20px 16px}
+header h1{font-size:23px;margin:0}
+header p{margin:5px 0}
+header a{color:white}
+main{max-width:700px;margin:auto;padding:14px}
+.card{background:white;border:1px solid #dce5d8;border-radius:14px;padding:15px;margin-bottom:14px}
+h2{font-size:18px;color:#4f6f52;margin:0 0 12px}
+label{display:block;font-weight:600;font-size:14px;margin:10px 0 4px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #ccd6c8;border-radius:9px;font:inherit;background:white;color:#303a30}
+button{border:0;border-radius:9px;padding:10px 13px;background:#4f6f52;color:white;font:inherit;font-weight:600}
+.secondary{background:#e8efe5;color:#344d36}
+.danger{background:#a94343}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.item{padding:13px 0;border-bottom:1px solid #e4e9e1}
+.item:last-child{border-bottom:0}
+.item h3{margin:0;font-size:16px}
+.meta{font-size:13px;color:#6b756a}
+.status{margin-top:8px}
+.summary{display:flex;gap:8px;flex-wrap:wrap}
+.pill{padding:7px 10px;background:#edf2e9;border-radius:9px;font-size:13px}
+.empty{text-align:center;color:#777;padding:20px 0}
+.small{font-size:12px;color:#687468}
+</style>
+</head>
+<body>
+<header>
+<a href="house.html">← 家のことへ戻る</a>
+<h1>🧻 消耗品の在庫管理</h1>
+<p>残り具合を確認して、買い忘れを防ごう</p>
+</header>
+<main>
+<section class="card">
+<h2>📊 在庫状況</h2>
+<div class="summary" id="summary"></div>
+</section>
+
+<section class="card">
+<h2>➕ 消耗品を追加</h2>
+<form id="form">
+<label for="name">品名 *</label>
+<input id="name" required placeholder="例：トイレットペーパー">
+<label for="place">置き場所（任意）</label>
+<input id="place" placeholder="例：洗面所の棚">
+<label for="status">在庫状況</label>
+<select id="status">
+<option value="あり">在庫あり</option>
+<option value="少ない">残り少ない</option>
+<option value="買う">買う</option>
+</select>
+<label for="note">メモ（任意）</label>
+<textarea id="note" rows="2" placeholder="例：いつもの銘柄、詰め替え用など"></textarea>
+<div class="actions">
+<button type="submit">保存する</button>
+<button type="button" class="secondary" id="clear">入力をクリア</button>
+</div>
+</form>
+</section>
+
+<section class="card">
+<h2>🛒 買い物リスト</h2>
+<div id="shopping"></div>
+</section>
+
+<section class="card">
+<h2>📋 消耗品一覧</h2>
+<label for="filter">表示する在庫状況</label>
+<select id="filter">
+<option value="">すべて</option>
+<option value="あり">在庫あり</option>
+<option value="少ない">残り少ない</option>
+<option value="買う">買う</option>
+</select>
+<div id="list"></div>
+<p class="small">記録はこのiPhoneのブラウザ内に保存されます。SafariのWebサイトデータを消すと失われる場合があるため、必要な情報は別途メモにも残してください。</p>
+</section>
+</main>
+<script>
+const KEY="kurashi_consumables_v1";
+const $=id=>document.getElementById(id);
+let items=[];
+try{items=JSON.parse(localStorage.getItem(KEY)||"[]");if(!Array.isArray(items))items=[]}catch(e){items=[]}
+const defaults=[
+["トイレットペーパー","収納棚","あり"],
+["ティッシュペーパー","収納棚","あり"],
+["洗濯洗剤","洗面所","あり"],
+["柔軟剤","洗面所","あり"],
+["食器用洗剤","台所","あり"],
+["お風呂用洗剤","浴室","あり"],
+["トイレ用洗剤","トイレ","あり"],
+["シャンプー","浴室","あり"],
+["ボディソープ","浴室","あり"],
+["歯磨き粉","洗面所","あり"],
+["ゴミ袋","収納棚","あり"],
+["キッチンペーパー","台所","あり"],
+["電池","収納棚","あり"]
+];
+if(!localStorage.getItem(KEY)){
+ items=defaults.map((a,i)=>({id:String(Date.now()+i),name:a[0],place:a[1],status:a[2],note:""}));
+ localStorage.setItem(KEY,JSON.stringify(items));
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(items));render()}
+function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function render(){
+ const count=s=>items.filter(x=>x.status===s).length;
+ $("summary").innerHTML=`<span class="pill">在庫あり：${count("あり")}件</span><span class="pill">残り少ない：${count("少ない")}件</span><span class="pill">買う：${count("買う")}件</span>`;
+ const shopping=items.filter(x=>x.status==="買う");
+ $("shopping").innerHTML=shopping.length?shopping.map(x=>`<div class="item"><strong>${esc(x.name)}</strong>${x.place?`<div class="meta">置き場所：${esc(x.place)}</div>`:""}<div class="actions"><button class="secondary" data-status="少ない" data-id="${esc(x.id)}">残り少ないに戻す</button><button data-status="あり" data-id="${esc(x.id)}">購入済み・在庫あり</button></div></div>`).join(""):'<div class="empty">買うものはありません</div>';
+ const f=$("filter").value;
+ const shown=items.filter(x=>!f||x.status===f);
+ $("list").innerHTML=shown.length?shown.map(x=>`<div class="item"><h3>${esc(x.name)}</h3><div class="meta">${x.place?"置き場所："+esc(x.place):"置き場所未設定"}</div>${x.note?`<p>${esc(x.note)}</p>`:""}<label class="status" for="s-${esc(x.id)}">在庫状況</label><select id="s-${esc(x.id)}" data-change="${esc(x.id)}"><option value="あり" ${x.status==="あり"?"selected":""}>在庫あり</option><option value="少ない" ${x.status==="少ない"?"selected":""}>残り少ない</option><option value="買う" ${x.status==="買う"?"selected":""}>買う</option></select><div class="actions"><button class="secondary" data-edit="${esc(x.id)}">編集</button><button class="danger" data-delete="${esc(x.id)}">削除</button></div></div>`).join(""):'<div class="empty">登録された消耗品はありません</div>';
+}
+$("form").addEventListener("submit",e=>{
+ e.preventDefault();
+ const name=$("name").value.trim();
+ if(!name)return;
+ items.unshift({id:String(Date.now())+Math.random().toString(16).slice(2),name,place:$("place").value.trim(),status:$("status").value,note:$("note").value.trim()});
+ save();$("form").reset();$("status").value="あり";alert("保存しました");
+});
+$("clear").addEventListener("click",()=>$("form").reset());
+$("filter").addEventListener("change",render);
+document.addEventListener("change",e=>{
+ const id=e.target.dataset.change;
+ if(!id)return;
+ const item=items.find(x=>x.id===id);if(!item)return;
+ item.status=e.target.value;save();
+});
+document.addEventListener("click",e=>{
+ const status=e.target.dataset.status;
+ const id=e.target.dataset.id;
+ if(status&&id){const item=items.find(x=>x.id===id);if(item){item.status=status;save()}return}
+ const edit=e.target.dataset.edit;
+ if(edit){
+  const item=items.find(x=>x.id===edit);if(!item)return;
+  $("name").value=item.name;$("place").value=item.place||"";$("status").value=item.status;$("note").value=item.note||"";
+  items=items.filter(x=>x.id!==edit);save();window.scrollTo({top:0,behavior:"smooth"});return;
+ }
+ const del=e.target.dataset.delete;
+ if(del){const item=items.find(x=>x.id===del);if(item&&confirm("「"+item.name+"」を削除しますか？")){items=items.filter(x=>x.id!==del);save()}}
+});
+render();
+</script>
+</body>
+</html>
