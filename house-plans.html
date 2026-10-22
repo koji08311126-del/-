@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📝 家のこれからやりたいこと</title>
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f5f7f2;
+  margin: 0;
+  padding: 16px;
+  color: #333;
+}
+h1 {
+  text-align: center;
+  color: #4f6f52;
+  font-size: 24px;
+}
+h2 {
+  color: #4f6f52;
+  font-size: 18px;
+}
+.card {
+  background: white;
+  padding: 16px;
+  margin: 14px 0;
+  border-radius: 14px;
+  box-shadow: 0 2px 7px #ccc;
+}
+label {
+  display: block;
+  margin-top: 12px;
+  font-weight: bold;
+  font-size: 14px;
+}
+input, select, textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 9px;
+  font-size: 16px;
+  background: white;
+}
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+button {
+  border: 0;
+  border-radius: 9px;
+  padding: 12px 14px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.primary {
+  background: #4f6f52;
+  color: white;
+  width: 100%;
+  margin-top: 16px;
+}
+.secondary {
+  background: #e7eee5;
+  color: #345238;
+  margin-top: 8px;
+}
+.delete {
+  background: #fbe8e6;
+  color: #9a3028;
+  margin-left: 6px;
+}
+.entry-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #4f6f52;
+  margin-bottom: 8px;
+}
+.meta {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #555;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.badge {
+  display: inline-block;
+  background: #e7eee5;
+  padding: 4px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  margin: 3px 3px 3px 0;
+}
+.back {
+  display: block;
+  text-align: center;
+  margin: 24px 0;
+  padding: 14px;
+  background: #4f6f52;
+  color: white;
+  border-radius: 12px;
+  text-decoration: none;
+}
+.small {
+  color: #666;
+  font-size: 13px;
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<h1>📝 家のこれからやりたいこと</h1>
+
+<div class="card">
+  <h2 id="formTitle">やりたいことを追加</h2>
+  <form id="planForm">
+    <label for="title">やりたいこと（必須）</label>
+    <input id="title" required placeholder="例：洗面所の棚を取り付ける">
+
+    <label for="category">場所・種類</label>
+    <input id="category" placeholder="例：洗面所、庭、DIY">
+
+    <label for="priority">優先順位</label>
+    <select id="priority">
+      <option>高</option>
+      <option selected>中</option>
+      <option>低</option>
+    </select>
+
+    <label for="status">進み具合</label>
+    <select id="status">
+      <option>未着手</option>
+      <option>作業中</option>
+      <option>完了</option>
+    </select>
+
+    <label for="date">やる予定の日</label>
+    <input id="date" type="date">
+
+    <label for="budget">予算（円）</label>
+    <input id="budget" type="number" min="0" step="1" placeholder="例：10000">
+
+    <label for="materials">必要な材料・道具</label>
+    <textarea id="materials" placeholder="買うもの、必要な道具など"></textarea>
+
+    <label for="memo">自由メモ</label>
+    <textarea id="memo" placeholder="気づいたこと、手順、家族と相談したいことなど"></textarea>
+
+    <button class="primary" type="submit" id="saveButton">保存する</button>
+    <button class="secondary" type="button" id="cancelButton" hidden>編集をやめる</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>登録した内容</h2>
+  <label for="filterStatus">進み具合で絞り込み</label>
+  <select id="filterStatus">
+    <option value="すべて">すべて表示</option>
+    <option value="未着手">未着手</option>
+    <option value="作業中">作業中</option>
+    <option value="完了">完了</option>
+  </select>
+  <p id="summary" class="small"></p>
+  <div id="list"></div>
+</div>
+
+<p class="small">
+  ※入力内容はこのブラウザ内に保存されます。ブラウザのデータ消去や機種変更などで消えることがあるため、大切な内容は別にも控えておいてください。
+</p>
+
+<a class="back" href="house.html">← 🏠 家のことに戻る</a>
+
+<script>
+const KEY = "kurashi_house_plans_v1";
+let plans = [];
+let editingId = null;
+
+const $ = id => document.getElementById(id);
+
+function loadPlans() {
+  try {
+    const data = localStorage.getItem(KEY);
+    plans = data ? JSON.parse(data) : [];
+    if (!Array.isArray(plans)) plans = [];
+  } catch (e) {
+    plans = [];
+  }
+}
+
+function savePlans() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(plans));
+    render();
+    return true;
+  } catch (e) {
+    alert("保存できませんでした。ブラウザの空き容量などを確認してください。");
+    return false;
+  }
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[ch]));
+}
+
+function resetForm() {
+  $("planForm").reset();
+  $("priority").value = "中";
+  $("status").value = "未着手";
+  editingId = null;
+  $("formTitle").textContent = "やりたいことを追加";
+  $("saveButton").textContent = "保存する";
+  $("cancelButton").hidden = true;
+}
+
+$("planForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const item = {
+    id: editingId || (Date.now().toString() + Math.random().toString(16).slice(2)),
+    title: $("title").value.trim(),
+    category: $("category").value.trim(),
+    priority: $("priority").value,
+    status: $("status").value,
+    date: $("date").value,
+    budget: $("budget").value,
+    materials: $("materials").value.trim(),
+    memo: $("memo").value.trim()
+  };
+
+  if (!item.title) {
+    alert("やりたいことを入力してください。");
+    return;
+  }
+
+  const oldPlans = plans.slice();
+  if (editingId) {
+    plans = plans.map(p => p.id === editingId ? item : p);
+  } else {
+    plans.unshift(item);
+  }
+
+  if (savePlans()) {
+    resetForm();
+    window.scrollTo(0, 0);
+  } else {
+    plans = oldPlans;
+  }
+});
+
+$("cancelButton").addEventListener("click", resetForm);
+$("filterStatus").addEventListener("change", render);
+
+function editPlan(id) {
+  const p = plans.find(item => item.id === id);
+  if (!p) return;
+
+  editingId = p.id;
+  $("title").value = p.title || "";
+  $("category").value = p.category || "";
+  $("priority").value = p.priority || "中";
+  $("status").value = p.status || "未着手";
+  $("date").value = p.date || "";
+  $("budget").value = p.budget || "";
+  $("materials").value = p.materials || "";
+  $("memo").value = p.memo || "";
+
+  $("formTitle").textContent = "内容を編集";
+  $("saveButton").textContent = "変更を保存";
+  $("cancelButton").hidden = false;
+  window.scrollTo(0, 0);
+}
+
+function deletePlan(id) {
+  const p = plans.find(item => item.id === id);
+  if (!p) return;
+  if (!confirm("「" + p.title + "」を削除しますか？")) return;
+
+  const oldPlans = plans.slice();
+  plans = plans.filter(item => item.id !== id);
+  if (!savePlans()) plans = oldPlans;
+
+  if (editingId === id) resetForm();
+  render();
+}
+
+function render() {
+  const filter = $("filterStatus").value;
+  const done = plans.filter(p => p.status === "完了").length;
+  $("summary").textContent =
+    "登録：" + plans.length + "件 ／ 完了：" + done + "件 ／ 未完了：" + (plans.length - done) + "件";
+
+  const shown = plans.filter(p => filter === "すべて" || p.status === filter);
+  if (shown.length === 0) {
+    $("list").innerHTML = '<p class="small">まだ登録がありません。上の欄から追加できます。</p>';
+    return;
+  }
+
+  $("list").innerHTML = shown.map(p => `
+    <div class="card">
+      <div class="entry-title">${escapeHTML(p.title)}</div>
+      <span class="badge">優先：${escapeHTML(p.priority || "中")}</span>
+      <span class="badge">${escapeHTML(p.status || "未着手")}</span>
+      ${p.category ? `<p class="meta">場所・種類：${escapeHTML(p.category)}</p>` : ""}
+      ${p.date ? `<p class="meta">予定日：${escapeHTML(p.date)}</p>` : ""}
+      ${p.budget ? `<p class="meta">予算：${escapeHTML(Number(p.budget).toLocaleString("ja-JP"))}円</p>` : ""}
+      ${p.materials ? `<p class="meta">材料・道具：\n${escapeHTML(p.materials)}</p>` : ""}
+      ${p.memo ? `<p class="meta">メモ：\n${escapeHTML(p.memo)}</p>` : ""}
+      <button class="secondary" type="button" data-edit="${escapeHTML(p.id)}">編集</button>
+      <button class="delete" type="button" data-delete="${escapeHTML(p.id)}">削除</button>
+    </div>
+  `).join("");
+}
+
+$("list").addEventListener("click", function(event) {
+  const editButton = event.target.closest("[data-edit]");
+  const deleteButton = event.target.closest("[data-delete]");
+  if (editButton) editPlan(editButton.dataset.edit);
+  if (deleteButton) deletePlan(deleteButton.dataset.delete);
+});
+
+loadPlans();
+render();
+</script>
+
+</body>
+</html>
