@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -45,17 +46,31 @@ button.small{min-height:33px;padding:5px 9px;font-size:12px}
 .badge{display:inline-block;font-size:11px;border-radius:20px;padding:2px 8px;background:#e8eee5}
 hr{border:0;border-top:1px solid var(--line);margin:14px 0}
 details summary{cursor:pointer;font-weight:650;padding:5px 0}
-.chart-row{margin:10px 0}
-.chart-label{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin-bottom:4px}
-.chart-track{height:14px;background:#e8eee5;border-radius:20px;overflow:hidden}
-.chart-bar{height:100%;background:#4f6f52;border-radius:20px}
+
+/* グラフ */
+.chart-intro{font-size:12px;color:#667064;margin:0 0 12px}
+.chart-row{margin:13px 0}
+.chart-label{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin-bottom:5px}
+.chart-track{height:16px;background:#e8eee5;border-radius:20px;overflow:hidden}
+.chart-bar{height:100%;background:#4f6f52;border-radius:20px;min-width:0}
+.chart-bar.income{background:#719477}
+.chart-bar.expense{background:#d28a63}
+.chart-bar.repayment{background:#d0a34d}
+.chart-bar.saving{background:#7894b5}
+.chart-bar.negative{background:#b7473c}
+.chart-balance{border:1px solid var(--line);border-radius:12px;padding:13px;margin:12px 0;background:#f7f9f5}
+.chart-balance .big{font-size:25px;font-weight:800}
 .chart-months{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;align-items:end}
 .chart-month{text-align:center;min-width:0;font-size:11px}
-.chart-month-bar{height:110px;display:flex;align-items:end;justify-content:center}
+.chart-month-bar{height:112px;display:flex;align-items:end;justify-content:center}
 .chart-month-fill{width:70%;background:#719477;border-radius:6px 6px 0 0;min-height:2px}
 .chart-month-value{font-size:10px;overflow-wrap:anywhere}
+.chart-legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:#667064;margin:8px 0}
+.chart-legend span{display:inline-flex;align-items:center;gap:4px}
+.legend-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.empty-chart{padding:18px 10px;text-align:center;background:#f7f9f5;border-radius:10px;color:#667064;font-size:13px}
 footer{text-align:center;color:#667064;font-size:12px;padding:20px 0}
-@media(max-width:390px){body{padding:8px}.card{padding:11px}.stat .value{font-size:16px}}
+@media(max-width:390px){body{padding:8px}.card{padding:11px}.stat .value{font-size:16px}.chart-months{gap:3px}}
 </style>
 </head>
 <body>
@@ -68,21 +83,16 @@ footer{text-align:center;color:#667064;font-size:12px;padding:20px 0}
 <h2>📅 管理する月</h2>
 <label for="month">確認する月</label>
 <input type="month" id="month">
-<p class="sub">月を変えると、その月の記録・予算・チェックが表示されます。</p>
+<p class="sub">月を変えると、その月の記録・予算・チェック・グラフが切り替わります。</p>
 </section>
 
 <section class="card">
-<h2>📈 月別・種別ごとの支出グラフ</h2>
-<h3>直近6か月の支出</h3>
-<div id="monthlyChart"></div>
-<hr>
-<h3>今月の項目ごとの支出</h3>
-<div id="categoryChart"></div>
-<p class="sub">ATM引き出し額そのものは支出に含めず、実際に使った現金だけを集計します。</p>
-</section>
-
-<section class="card">
-<h2>📊 今月のお金</h2>
+<h2>📊 今月の家計まとめ</h2>
+<div class="chart-balance">
+<div class="sub">今月の収入から残る金額</div>
+<div class="big" id="chartBalanceBig">0円</div>
+<div class="sub">収入 − 生活費 − ローン返済 − 貯蓄・積立</div>
+</div>
 <div class="grid">
 <div class="stat"><div class="label">収入</div><div class="value green" id="incomeTotal">0円</div></div>
 <div class="stat"><div class="label">毎日の支出</div><div class="value" id="expenseTotal">0円</div></div>
@@ -92,6 +102,19 @@ footer{text-align:center;color:#667064;font-size:12px;padding:20px 0}
 <div class="stat"><div class="label">今月の予算残額</div><div class="value" id="budgetLeft">未設定</div></div>
 </div>
 <p class="sub">入力済みの収入から支出・返済・積立を引いた金額です。実際の銀行残高とは異なります。</p>
+</section>
+
+<section class="card">
+<h2>📈 家計グラフ</h2>
+<p class="chart-intro">見たいグラフを選んでください。選択した月に合わせて自動で更新します。</p>
+<label for="chartMode">グラフの種類</label>
+<select id="chartMode">
+<option value="balance">① 今月の収支</option>
+<option value="category">② 項目別の支出</option>
+<option value="monthly">③ 直近6か月の支出推移</option>
+</select>
+<div id="chartView" style="margin-top:14px"></div>
+<p class="sub">ATM引き出し額そのものは支出に含めず、実際に使った現金だけを集計します。</p>
 </section>
 
 <section class="card">
@@ -391,6 +414,8 @@ function renderSummary(){
  $("repayTotal").textContent=yen(repay);
  $("savingTotal").textContent=yen(saving);
  $("balanceTotal").textContent=yen(balance);
+ $("chartBalanceBig").textContent=yen(balance);
+ $("chartBalanceBig").className="big "+(balance<0?"red":"green");
  $("balanceTotal").className="value "+(balance<0?"red":"green");
  const b=monthBudgets(),keys=Object.keys(b).filter(k=>cats.expense.includes(k)&&Number.isFinite(Number(b[k])));
  if(!keys.length)$("budgetLeft").textContent="未設定";
@@ -401,12 +426,90 @@ function renderSummary(){
  }
 }
 
+/* 選択したグラフだけを表示 */
 function renderCharts(){
- const root=$("monthlyChart");root.innerHTML="";
+ const root=$("chartView");root.innerHTML="";
+ const mode=$("chartMode").value;
+ if(mode==="balance")renderBalanceChart(root);
+ else if(mode==="category")renderCategoryChart(root);
+ else renderMonthlyChart(root);
+}
+
+/* ① 選択月の収支グラフ */
+function renderBalanceChart(root){
+ const income=moneySum("income");
+ const expense=moneySum("expense");
+ const repay=moneySum("repayment");
+ const saving=moneySum("saving");
+ const balance=income-expense-repay-saving;
+ const rows=[
+  {name:"収入",value:income,cls:"income"},
+  {name:"生活費・日々の支出",value:expense,cls:"expense"},
+  {name:"ローン返済",value:repay,cls:"repayment"},
+  {name:"貯蓄・積立・NISA",value:saving,cls:"saving"}
+ ];
+ const max=Math.max(1,...rows.map(x=>x.value));
+ text(root,"h3",selectedMonth().replace("-","年")+"月のお金の流れ");
+ text(root,"p","収入と、支出・返済・貯蓄に回した金額を比べます。","chart-intro");
+ rows.forEach(x=>{
+  const row=document.createElement("div");row.className="chart-row";
+  const label=document.createElement("div");label.className="chart-label";
+  text(label,"span",x.name);text(label,"strong",yen(x.value));row.appendChild(label);
+  const track=document.createElement("div");track.className="chart-track";
+  const bar=document.createElement("div");bar.className="chart-bar "+x.cls;
+  bar.style.width=(x.value/max*100)+"%";track.appendChild(bar);row.appendChild(track);
+  root.appendChild(row);
+ });
+ const result=document.createElement("div");result.className="chart-balance";
+ text(result,"div","今月の最終的な残り","sub");
+ text(result,"div",yen(balance),"big "+(balance<0?"red":"green"));
+ text(result,"div",balance<0?"収入より支出・返済・貯蓄が多くなっています。":"収入から支出・返済・貯蓄を引いた金額です。","sub");
+ root.appendChild(result);
+ const legend=document.createElement("div");legend.className="chart-legend";
+ [["#719477","収入"],["#d28a63","生活費"],["#d0a34d","返済"],["#7894b5","貯蓄"]].forEach(([color,name])=>{
+  const item=document.createElement("span");
+  const dot=document.createElement("i");dot.className="legend-dot";dot.style.background=color;
+  item.appendChild(dot);text(item,"span",name);legend.appendChild(item);
+ });
+ root.appendChild(legend);
+}
+
+/* ② 選択月の項目別支出 */
+function renderCategoryChart(root){
+ const sums=cats.expense.map(c=>({name:c,value:budgetSpent(c)}))
+  .filter(x=>x.value>0).sort((a,b)=>b.value-a.value);
+ const total=sums.reduce((s,x)=>s+x.value,0);
+ text(root,"h3",selectedMonth().replace("-","年")+"月の使い道");
+ text(root,"p","金額の大きい項目から順番に表示しています。","chart-intro");
+ if(!sums.length){
+  text(root,"div","この月の支出記録はまだありません。","empty-chart");return;
+ }
+ text(root,"div","生活費の合計："+yen(total),"chart-balance");
+ const max=Math.max(...sums.map(x=>x.value));
+ sums.forEach((x,i)=>{
+  const row=document.createElement("div");row.className="chart-row";
+  const label=document.createElement("div");label.className="chart-label";
+  text(label,"span",(i+1)+"位　"+x.name);
+  text(label,"strong",yen(x.value));
+  row.appendChild(label);
+  const track=document.createElement("div");track.className="chart-track";
+  const bar=document.createElement("div");bar.className="chart-bar expense";
+  bar.style.width=(x.value/max*100)+"%";
+  track.appendChild(bar);row.appendChild(track);
+  const percent=total>0?Math.round(x.value/total*100):0;
+  text(row,"div","生活費全体の約"+percent+"%","mini");
+  root.appendChild(row);
+ });
+}
+
+/* ③ 直近6か月の支出推移 */
+function renderMonthlyChart(root){
  const months=[];
  for(let i=5;i>=0;i--)months.push(shiftMonth(selectedMonth(),-i));
  const totals=months.map(m=>records.reduce((s,r)=>s+(r.type==="expense"&&r.date&&r.date.slice(0,7)===m?(Number(r.amount)||0):0),0));
  const max=Math.max(1,...totals);
+ text(root,"h3","直近6か月の生活費");
+ text(root,"p","選択している月を基準に、過去6か月の支出を比べます。","chart-intro");
  const bars=document.createElement("div");bars.className="chart-months";
  months.forEach((m,i)=>{
   const col=document.createElement("div");col.className="chart-month";
@@ -418,20 +521,8 @@ function renderCharts(){
   text(col,"div",m.slice(5)+"月","mini");bars.appendChild(col);
  });
  root.appendChild(bars);
-
- const catRoot=$("categoryChart");catRoot.innerHTML="";
- const sums=cats.expense.map(c=>({name:c,value:budgetSpent(c)})).filter(x=>x.value>0).sort((a,b)=>b.value-a.value);
- if(!sums.length){text(catRoot,"p","この月の支出記録はまだありません。","sub");return}
- const catMax=Math.max(...sums.map(x=>x.value));
- sums.forEach(x=>{
-  const row=document.createElement("div");row.className="chart-row";
-  const label=document.createElement("div");label.className="chart-label";
-  text(label,"span",x.name);text(label,"strong",yen(x.value));row.appendChild(label);
-  const track=document.createElement("div");track.className="chart-track";
-  const bar=document.createElement("div");bar.className="chart-bar";
-  bar.style.width=(x.value/catMax*100)+"%";track.appendChild(bar);row.appendChild(track);
-  catRoot.appendChild(row);
- });
+ const total=totals.reduce((s,n)=>s+n,0);
+ text(root,"p","6か月の支出合計："+yen(total),"chart-intro");
 }
 
 function renderChecks(){
@@ -636,6 +727,7 @@ function startEdit(r){
 
 $("type").addEventListener("change",()=>updateCategory());
 $("month").addEventListener("change",()=>{updateBudgetCategory($("budgetCategory").value);renderAll()});
+$("chartMode").addEventListener("change",renderCharts);
 $("filterType").addEventListener("change",renderRecords);
 $("budgetCategory").addEventListener("change",loadBudgetInput);
 
