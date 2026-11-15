@@ -77,6 +77,57 @@ button.small { min-height:33px; padding:5px 9px; font-size:12px; }
 hr { border:0; border-top:1px solid var(--line); margin:14px 0; }
 details summary { cursor:pointer; font-weight:650; padding:5px 0; }
 footer { text-align:center; color:#667064; font-size:12px; padding:20px 0; }
+
+.chart-row {
+  margin:10px 0;
+}
+.chart-label {
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  font-size:12px;
+  margin-bottom:4px;
+}
+.chart-track {
+  height:14px;
+  background:#e8eee5;
+  border-radius:20px;
+  overflow:hidden;
+}
+.chart-bar {
+  height:100%;
+  background:#4f6f52;
+  border-radius:20px;
+  min-width:0;
+}
+.chart-months {
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:6px;
+  align-items:end;
+}
+.chart-month {
+  text-align:center;
+  min-width:0;
+  font-size:11px;
+}
+.chart-month-bar {
+  height:110px;
+  display:flex;
+  align-items:end;
+  justify-content:center;
+}
+.chart-month-fill {
+  width:70%;
+  background:#719477;
+  border-radius:6px 6px 0 0;
+  min-height:2px;
+}
+.chart-month-value {
+  font-size:10px;
+  overflow-wrap:anywhere;
+}
+
 @media(max-width:390px) {
   body { padding:8px; }
   .card { padding:11px; }
@@ -95,6 +146,16 @@ footer { text-align:center; color:#667064; font-size:12px; padding:20px 0; }
   <label for="month">確認する月</label>
   <input type="month" id="month">
   <p class="sub">月を変えると、その月の記録・予算・チェックが表示されます。</p>
+</section>
+
+<section class="card">
+  <h2>📈 月別・種別ごとの支出グラフ</h2>
+  <h3>直近6か月の支出</h3>
+  <div id="monthlyChart"></div>
+  <hr>
+  <h3>今月の種別ごとの支出</h3>
+  <div id="categoryChart"></div>
+  <p class="sub">ATM引き出しは支出に含めず、実際に使った金額を集計します。</p>
 </section>
 
 <section class="card">
